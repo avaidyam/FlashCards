@@ -80,6 +80,28 @@ class WindowController: NSWindowController {
         self.currentDeckIdx = sender.tag
     }
     
+    @IBAction func addCard(_ sender: NSButton!) {
+        
+        // Alert user to select a Deck first.
+        guard self.currentDeckIdx >= 0 && self.currentDeckIdx < self.allDecks.count else {
+            let alert = NSAlert()
+            alert.messageText = "No deck selected or available."
+            alert.informativeText = "You need to select a deck before adding a card to it."
+            alert.beginSheetModal(for: self.window!)
+            return
+        }
+        
+        // Hide the window, take the screenshot, and show the window afterwards!
+        self.window?.orderOut(nil)
+        DispatchQueue.main.async {
+            let img = try? screenshot()
+            self.imageController?.imageView.image = img
+            DispatchQueue.main.async {
+                self.window?.makeKeyAndOrderFront(nil)
+            }
+        }
+    }
+    
     // Flip the current card.
     @IBAction func flip(_ sender: NSButton!) {
         self.faceFront = !self.faceFront
@@ -95,6 +117,18 @@ class WindowController: NSWindowController {
         self.currentCardIdx += 1
     }
 }
+
+/*
+public class Deck {
+    public static var all: [Deck] = []
+    public var cards: [Card] = []
+}
+
+public class Card {
+    public var front: NSImage
+    public var back: NSImage
+}
+*/
 
 // Get all decks (really just folders with images) in the default directory.
 func decks() throws -> [URL] {
@@ -116,4 +150,30 @@ func pair(from face: URL) throws -> (URL, URL) {
         throw CocoaError(.fileNoSuchFile)
     }
     return (face, back)
+}
+
+// Take a screenshot using the system function and provide it as an image.
+func screenshot() throws -> NSImage {
+    let task = Process()
+    task.launchPath = "/usr/sbin/screencapture"
+    task.arguments = ["-cio"]
+    task.launch()
+    
+    var img: NSImage? = nil
+    let s = DispatchSemaphore(value: 0)
+    task.terminationHandler = { _ in
+        guard let pb = NSPasteboard.general.pasteboardItems?.first, pb.types.contains(.png) else {
+            s.signal(); return
+        }
+        guard let data = pb.data(forType: .png), let image = NSImage(data: data) else {
+            s.signal(); return
+        }
+        img = image
+        NSPasteboard.general.clearContents()
+        s.signal()
+    }
+    s.wait()
+    
+    guard img != nil else { throw CocoaError(.fileNoSuchFile) }
+    return img!
 }
