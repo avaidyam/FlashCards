@@ -2,7 +2,7 @@ import Cocoa
 
 public struct Deck {
     
-    // Get all decks (really just folders with images) in the default directory.
+    /// Get all decks (really just folders with images) in the default directory.
     public static var all: [Deck] {
         let docs = FileManager.default.urls(for: .desktopDirectory, in: .userDomainMask)
         let decks = docs[0].appendingPathComponent("Decks", isDirectory: true)
@@ -11,7 +11,7 @@ public struct Deck {
         return (urls ?? []).map { Deck($0) }
     }
     
-    // Get all the cards (image pairs) in a deck.
+    /// Get all the cards (image pairs) in a deck.
     public var cards: [Card] {
         let urls = try? FileManager.default.contentsOfDirectory(at: self.url,
                                                                 includingPropertiesForKeys: [], options: [.skipsHiddenFiles])
@@ -19,16 +19,20 @@ public struct Deck {
     }
     
     public let url: URL
+    
     fileprivate init(_ url: URL) {
         self.url = url
     }
 }
 
 public struct Card {
+    
+    /// The front face of the card. Can be an image or a string.
     public var front: NSImage {
         return NSImage(byReferencing: self.frontURL)
     }
     
+    /// The back face of the card. Can be an image or a string.
     public var back: NSImage {
         return NSImage(byReferencing: self.backURL)
     }
@@ -36,7 +40,7 @@ public struct Card {
     public let frontURL: URL
     public let backURL: URL
     
-    // Match a front face to a back face for a card.
+    /// Match a front face to a back face for a card.
     fileprivate init(front frontURL: URL) throws {
         self.frontURL = frontURL
         

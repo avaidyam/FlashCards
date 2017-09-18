@@ -2,6 +2,8 @@ import Cocoa
 
 @NSApplicationMain
 class AppDelegate: NSObject, NSApplicationDelegate {
+    
+    /// Add an opened deck to the saved deck list.
     public func application(_ sender: NSApplication, openFile filename: String) -> Bool {
         let a = NSAlert()
         a.messageText = "Opening \(filename)..."
@@ -10,28 +12,26 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
 }
 
-// This is where most of the deck/card management is.
 public class WindowController: NSWindowController {
     
+    /// The currently presented deck. Note: setting this resets the presented card.
     private var presentingDeck: Deck? = nil {
         didSet {
             self.presentingCard = self.presentingDeck?.cards.first
         }
     }
+    
+    /// The currently visible card. Note: setting this resets the visible face.
     private var presentingCard: Card? = nil {
         didSet {
             self.faceFront = true
         }
     }
     
-    // Swap the visible face of the current card of the current deck.
+    /// The currently visible face of the presented card of the presented deck.
     private var faceFront: Bool = true {
         didSet {
-            if let card = self.presentingCard {
-                self.faceViewController?.representedObject =  self.faceFront ? card.front : card.back
-            } else {
-                self.faceViewController?.representedObject = nil
-            }
+            self.faceViewController?.representedObject = self.faceFront ? self.presentingCard?.front : self.presentingCard?.back
         }
     }
     
@@ -43,7 +43,7 @@ public class WindowController: NSWindowController {
         self.window?.titleVisibility = .hidden
     }
     
-    // Select a new deck to present.
+    /// Select a new deck to present.
     @IBAction public func select(_ sender: NSButton!) {
         let menu = NSMenu(title: "Decks")
         Deck.all.forEach {
@@ -56,11 +56,13 @@ public class WindowController: NSWindowController {
         menu.popUp(positioning: menu.items[0], at: NSPoint(x: 0, y: sender.frame.height), in: sender)
     }
     
-    // Choose a new deck from the selection list.
+    /// Choose a new deck from the selection list.
     @IBAction public func choose(_ sender: NSMenuItem!) {
         self.presentingDeck = sender.representedObject as? Deck
     }
     
+    /// Add a new card by taking a screenshot and marking it up.
+    // TODO: MOVE THIS TO DECK LIST!
     @IBAction public func addCard(_ sender: NSButton!) {
         
         // Alert user to select a Deck first.
@@ -89,19 +91,19 @@ public class WindowController: NSWindowController {
         }
     }
     
-    // Flip the current card.
+    /// Flip the current card.
     @IBAction public func flip(_ sender: NSButton!) {
         self.faceFront = !self.faceFront
     }
     
-    // Show the previous card in the deck and wrap around if at the start.
+    /// Show the previous card in the deck and wrap around if at the start.
     @IBAction public func prev(_ sender: NSButton!) {
         guard let deck = self.presentingDeck, let card = self.presentingCard else { return }
         let nextIdx = deck.cards.index { $0.frontURL == card.frontURL }?.advanced(by: -1) ?? 0
         self.presentingCard = deck.cards[safe: nextIdx] ?? deck.cards.last
     }
     
-    // Show the next card in the deck and wrap around if at the end.
+    /// Show the next card in the deck and wrap around if at the end.
     @IBAction public func next(_ sender: NSButton!) {
         guard let deck = self.presentingDeck, let card = self.presentingCard else { return }
         let nextIdx = deck.cards.index { $0.frontURL == card.frontURL }?.advanced(by: +1) ?? 0
@@ -109,6 +111,7 @@ public class WindowController: NSWindowController {
     }
 }
 
+/// Presents a face of a card (text or image).
 public class FaceViewController: NSViewController {
     @IBOutlet private var imageView: NSImageView! = nil
     @IBOutlet private var textView: NSTextView! = nil
@@ -156,6 +159,7 @@ public class FaceViewController: NSViewController {
     }
 }
 
+/// Display a list of each saved deck and each card within them, available for editing.
 public class DeckListController: NSViewController, NSBrowserDelegate {
     
     @IBOutlet var header: NSViewController?
@@ -191,7 +195,7 @@ public class DeckListController: NSViewController, NSBrowserDelegate {
     }
     
     public func browser(_ browser: NSBrowser, headerViewControllerForItem item: Any?) -> NSViewController? {
-        print("HEADER", item)
+        print("HEADER", item as Any)
         return self.header
     }
     

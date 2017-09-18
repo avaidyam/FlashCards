@@ -1,7 +1,8 @@
 import Cocoa
 
-// Take a screenshot using the system function and provide it as an image.
 extension NSScreen {
+    
+    /// Take a screenshot using the system function and provide it as an image.
     public static func screenshot() throws -> NSImage {
         let task = Process()
         task.launchPath = "/usr/sbin/screencapture"
@@ -31,7 +32,7 @@ extension NSScreen {
 
 extension NSImage {
     
-    // Trigger the Preview MarkupUI for the given image.
+    /// Trigger the Preview MarkupUI for the given image.
     public func markup(in view: NSView) throws -> NSImage {
         class MarkupDelegate: NSObject, NSSharingServiceDelegate {
             private let view: NSView
@@ -79,6 +80,7 @@ extension NSImage {
         return img!
     }
     
+    /// Save an arbitrary image format to the given file type.
     func write(to url: URL, type: NSBitmapImageRep.FileType) throws {
         guard
             let imageData = tiffRepresentation,
@@ -91,12 +93,15 @@ extension NSImage {
 }
 
 extension NSMenu {
+    
+    /// Convenience to open a menu from an IB sender.
     @IBAction public func open(_ sender: NSControl) {
         self.popUp(positioning: self.items.first, at: NSPoint.zero, in: sender)
     }
 }
 
 extension Array {
+    
     public subscript(safe index: Int) -> Element? {
         return index >= 0 && index < self.count ? self[index] : nil
     }
