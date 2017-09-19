@@ -13,7 +13,7 @@ public struct Deck {
     
     /// Get all the cards (image pairs) in a deck.
     public var cards: [Card] {
-        let urls = try? FileManager.default.contentsOfDirectory(at: self.url,
+        let urls = try? FileManager.default.contentsOfDirectory(at: self.url.appendingPathComponent("Contents"),
                                                                 includingPropertiesForKeys: [], options: [.skipsHiddenFiles])
         return (urls ?? []).filter { $0.lastPathComponent.contains(".front.") }.flatMap { try? Card(front: $0) }
     }
@@ -58,21 +58,27 @@ public struct Card {
 
 public class DeckDocument: NSDocument {
     
+    private var deck: Deck? = nil
+    
     public override class var autosavesInPlace: Bool {
         return true
+    }
+    
+    public override var displayName: String! {
+        get {
+            return self.deck?.url.lastPathComponent.components(separatedBy: ".").first ?? "Untitled"
+        }
+        set {}
     }
     
     public override func makeWindowControllers() {
         let storyboard = NSStoryboard(name: NSStoryboard.Name("Main"), bundle: nil)
         let windowController = storyboard.instantiateController(withIdentifier: NSStoryboard.SceneIdentifier("DeckWindowController")) as! DeckWindowController
+        windowController.presentingDeck = self.deck
         self.addWindowController(windowController)
     }
     
-    public override func data(ofType typeName: String) throws -> Data {
-        throw NSError(domain: NSOSStatusErrorDomain, code: unimpErr, userInfo: nil)
-    }
-    
-    public override func read(from data: Data, ofType typeName: String) throws {
-        throw NSError(domain: NSOSStatusErrorDomain, code: unimpErr, userInfo: nil)
+    public override func read(from url: URL, ofType typeName: String) throws {
+        self.deck = Deck(url)
     }
 }

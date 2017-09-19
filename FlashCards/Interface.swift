@@ -3,11 +3,16 @@ import Cocoa
 @NSApplicationMain
 class AppDelegate: NSObject, NSApplicationDelegate {
     
+    func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {
+        if !flag {
+            try? NSDocumentController.shared.openUntitledDocumentAndDisplay(true)
+        }
+        return true
+    }
+    
     /// Add an opened deck to the saved deck list.
     public func application(_ sender: NSApplication, openFile filename: String) -> Bool {
-        let a = NSAlert()
-        a.messageText = "Opening \(filename)..."
-        a.runModal()
+        NSDocumentController.shared.openDocument(withContentsOf: URL(fileURLWithPath: filename), display: true) { _, _, _ in }
         return true
     }
 }
@@ -15,10 +20,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 public class DeckWindowController: NSWindowController {
     
     /// The currently presented deck. Note: setting this resets the presented card.
-    private var presentingDeck: Deck? = nil {
+    public var presentingDeck: Deck? = nil {
         didSet {
             self.presentingCard = self.presentingDeck?.cards.first
-            self.window?.title = self.presentingDeck?.url.lastPathComponent.components(separatedBy: ".").first ?? "Deck"
         }
     }
     
@@ -62,36 +66,6 @@ public class DeckWindowController: NSWindowController {
         self.presentingDeck = sender.representedObject as? Deck
     }
     
-    /// Add a new card by taking a screenshot and marking it up.
-    // TODO: MOVE THIS TO DECK LIST!
-    @IBAction public func addCard(_ sender: NSButton!) {
-        
-        // Alert user to select a Deck first.
-        guard self.presentingDeck == nil else {
-            let alert = NSAlert()
-            alert.messageText = "No deck selected or available."
-            alert.informativeText = "You need to select a deck before adding a card to it."
-            alert.beginSheetModal(for: self.window!)
-            return
-        }
-        
-        // Hide the window, take the screenshot, and show the window afterwards!
-        self.window?.orderOut(nil)
-        DispatchQueue.global(qos: .userInteractive).async {
-            let img = try? NSScreen.screenshot()
-            self.faceViewController?.representedObject = img
-            let marked = try? img!.markup(in: self.faceViewController!.view)
-            self.faceViewController?.representedObject = marked
-            
-            try? img?.write(to: URL(fileURLWithPath: "/Users/aditya/Desktop/Card Front \(Date()).png"), type: .png)
-            try? marked?.write(to: URL(fileURLWithPath: "/Users/aditya/Desktop/Card Back \(Date()).png"), type: .png)
-            
-            DispatchQueue.main.async {
-                self.window?.makeKeyAndOrderFront(nil)
-            }
-        }
-    }
-    
     /// Flip the current card.
     @IBAction public func flip(_ sender: NSButton!) {
         self.faceFront = !self.faceFront
@@ -118,7 +92,7 @@ public class FaceViewController: NSViewController {
     @IBOutlet private var textView: NSTextView! = nil
     @IBOutlet private var noneLabel: NSTextField! = nil
     
-    public override func viewDidAppear() {
+    public override func viewDidLoad() {
         self.representedObject = nil
     }
     
@@ -198,6 +172,25 @@ public class DeckListController: NSViewController, NSBrowserDelegate {
     public func browser(_ browser: NSBrowser, previewViewControllerForLeafItem item: Any) -> NSViewController? {
         print("PREVIEW", item)
         return self.preview
+    }
+    
+    /// Add a new card by taking a screenshot and marking it up.
+    // TODO: MAKE THIS DO REAL THINGS
+    @IBAction public func addCard(_ sender: NSButton!) {
+        
+        // Hide the window, take the screenshot, and show the window afterwards!
+        self.view.window?.sheetParent?.orderOut(nil)
+        DispatchQueue.global(qos: .userInteractive).async {
+            let img = try? NSScreen.screenshot()
+            let marked = try? img!.markup(in: self.view)
+            
+            try? img?.write(to: URL(fileURLWithPath: "/Users/aditya/Desktop/Card Front \(Date()).png"), type: .png)
+            try? marked?.write(to: URL(fileURLWithPath: "/Users/aditya/Desktop/Card Back \(Date()).png"), type: .png)
+            
+            DispatchQueue.main.async {
+                self.view.window?.sheetParent?.makeKeyAndOrderFront(nil)
+            }
+        }
     }
 }
 

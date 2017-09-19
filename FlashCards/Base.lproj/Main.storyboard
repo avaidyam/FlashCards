@@ -693,12 +693,12 @@
                             <allowedToolbarItems>
                                 <toolbarItem implicitItemIdentifier="2C35C313-B060-4E2C-A71C-223D53470E59" label="Custom View" paletteLabel="Custom View" id="OU2-Im-iir">
                                     <nil key="toolTip"/>
-                                    <size key="minSize" width="88" height="25"/>
-                                    <size key="maxSize" width="88" height="25"/>
+                                    <size key="minSize" width="40" height="25"/>
+                                    <size key="maxSize" width="40" height="25"/>
                                     <button key="view" verticalHuggingPriority="750" id="1Cf-mM-EyK">
-                                        <rect key="frame" x="0.0" y="14" width="88" height="25"/>
+                                        <rect key="frame" x="18" y="14" width="40" height="25"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="roundTextured" title="Select Deck" bezelStyle="texturedRounded" alignment="center" lineBreakMode="truncatingTail" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="bkD-i5-hNm">
+                                        <buttonCell key="cell" type="roundTextured" title="Edit" bezelStyle="texturedRounded" alignment="center" lineBreakMode="truncatingTail" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="bkD-i5-hNm">
                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
@@ -756,26 +756,22 @@
                                         </connections>
                                     </button>
                                 </toolbarItem>
-                                <toolbarItem implicitItemIdentifier="A82777AE-7AA9-4521-BB7E-BCAC8F2302FC" label="Custom View" paletteLabel="Custom View" image="NSAddTemplate" id="9y4-1n-uuZ">
+                                <toolbarItem implicitItemIdentifier="DCB7710E-BB5B-4794-8D25-B20972C7FE1B" label="Custom View" paletteLabel="Custom View" id="QAL-Fq-NZK">
                                     <nil key="toolTip"/>
-                                    <size key="minSize" width="88" height="25"/>
-                                    <size key="maxSize" width="88" height="25"/>
-                                    <button key="view" verticalHuggingPriority="750" id="fpx-2Z-15X">
-                                        <rect key="frame" x="0.0" y="14" width="88" height="25"/>
+                                    <size key="minSize" width="64" height="12"/>
+                                    <size key="maxSize" width="96" height="18"/>
+                                    <levelIndicator key="view" verticalHuggingPriority="750" id="fdq-qk-sqd">
+                                        <rect key="frame" x="6" y="14" width="65" height="12"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="roundTextured" title="Add Card" bezelStyle="texturedRounded" image="NSAddTemplate" imagePosition="left" alignment="center" lineBreakMode="truncatingTail" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="b8G-dx-IXQ">
-                                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                            <font key="font" metaFont="system"/>
-                                        </buttonCell>
-                                        <connections>
-                                            <action selector="addCard:" target="B8D-0N-5wS" id="7qO-2U-jB7"/>
-                                        </connections>
-                                    </button>
+                                        <levelIndicatorCell key="cell" editable="YES" alignment="left" maxValue="5" levelIndicatorStyle="rating" id="m1C-cc-5za"/>
+                                        <color key="fillColor" red="0.03529411927" green="0.76470589639999997" blue="0.23529411850000001" alpha="1" colorSpace="calibratedRGB"/>
+                                    </levelIndicator>
                                 </toolbarItem>
                             </allowedToolbarItems>
                             <defaultToolbarItems>
                                 <toolbarItem reference="OU2-Im-iir"/>
-                                <toolbarItem reference="9y4-1n-uuZ"/>
+                                <toolbarItem reference="525-tQ-orD"/>
+                                <toolbarItem reference="QAL-Fq-NZK"/>
                                 <toolbarItem reference="525-tQ-orD"/>
                                 <toolbarItem reference="zLh-tE-Tbk"/>
                                 <toolbarItem reference="Pl3-vY-tKB"/>
@@ -818,8 +814,19 @@
                                     <action selector="dismissController:" target="02c-yu-gN4" id="4BA-PH-hgA"/>
                                 </connections>
                             </button>
+                            <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="8Qn-JX-IK0">
+                                <rect key="frame" x="14" y="12" width="88" height="25"/>
+                                <buttonCell key="cell" type="roundTextured" title="Add Card" bezelStyle="texturedRounded" image="NSAddTemplate" imagePosition="left" alignment="center" lineBreakMode="truncatingTail" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="DKj-ZV-YPu">
+                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                </buttonCell>
+                                <connections>
+                                    <action selector="addCard:" target="02c-yu-gN4" id="T4a-fG-nFn"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <constraints>
+                            <constraint firstItem="8Qn-JX-IK0" firstAttribute="leading" secondItem="031-ud-LuR" secondAttribute="leading" constant="14" id="2xW-md-C0E"/>
                             <constraint firstItem="3b3-e2-tEF" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="031-ud-LuR" secondAttribute="leading" constant="20" symbolic="YES" id="3Bm-qK-oTo"/>
                             <constraint firstAttribute="trailing" secondItem="6Gb-XR-ev7" secondAttribute="trailing" constant="-2" id="5Ig-bm-G4l"/>
                             <constraint firstAttribute="trailing" secondItem="3b3-e2-tEF" secondAttribute="trailing" constant="14" id="Nme-Fw-jmJ"/>
@@ -827,6 +834,8 @@
                             <constraint firstAttribute="bottom" secondItem="6Gb-XR-ev7" secondAttribute="bottom" constant="50" id="X7C-00-BUJ"/>
                             <constraint firstItem="6Gb-XR-ev7" firstAttribute="leading" secondItem="031-ud-LuR" secondAttribute="leading" constant="-1" id="cZk-E2-E7R"/>
                             <constraint firstItem="6Gb-XR-ev7" firstAttribute="top" secondItem="031-ud-LuR" secondAttribute="top" constant="-1" id="lDO-WK-6d6"/>
+                            <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="8Qn-JX-IK0" secondAttribute="trailing" id="tfJ-3P-e8j"/>
+                            <constraint firstAttribute="bottom" secondItem="8Qn-JX-IK0" secondAttribute="bottom" constant="14" id="vcM-uA-D33"/>
                         </constraints>
                     </view>
                     <connections>
@@ -943,8 +952,8 @@
                                 </scroller>
                             </scrollView>
                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="ccm-Vk-CMe">
-                                <rect key="frame" x="127" y="135" width="196" height="29"/>
-                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="No Deck Selected" id="S8h-OL-rOu">
+                                <rect key="frame" x="173" y="135" width="104" height="29"/>
+                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="No Cards" id="S8h-OL-rOu">
                                     <font key="font" metaFont="system" size="24"/>
                                     <color key="textColor" name="tertiaryLabelColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
