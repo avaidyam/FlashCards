@@ -41,6 +41,8 @@
 			<string>Editor</string>
 			<key>LSIsAppleDefaultForType</key>
 			<true/>
+			<key>NSDocumentClass</key>
+			<string>$(PRODUCT_MODULE_NAME).DeckDocument</string>
 			<key>LSItemContentTypes</key>
 			<array>
 				<string>com.avaidyam.FlashCards.deck</string>

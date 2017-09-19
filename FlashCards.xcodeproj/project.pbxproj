@@ -12,6 +12,7 @@
 		4828FBB21F5F076500918A79 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4828FBB01F5F076500918A79 /* Main.storyboard */; };
 		48466CC81F6FF21C008AD85A /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48466CC71F6FF21C008AD85A /* Extensions.swift */; };
 		48466CCA1F6FF23C008AD85A /* Structures.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48466CC91F6FF23C008AD85A /* Structures.swift */; };
+		48466CCC1F6FF46E008AD85A /* GradingEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48466CCB1F6FF46E008AD85A /* GradingEngine.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -23,6 +24,7 @@
 		4828FBB41F5F076500918A79 /* FlashCards.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = FlashCards.entitlements; sourceTree = "<group>"; };
 		48466CC71F6FF21C008AD85A /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		48466CC91F6FF23C008AD85A /* Structures.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Structures.swift; sourceTree = "<group>"; };
+		48466CCB1F6FF46E008AD85A /* GradingEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradingEngine.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -58,6 +60,7 @@
 				4828FBAA1F5F076500918A79 /* Interface.swift */,
 				48466CC91F6FF23C008AD85A /* Structures.swift */,
 				48466CC71F6FF21C008AD85A /* Extensions.swift */,
+				48466CCB1F6FF46E008AD85A /* GradingEngine.swift */,
 				4828FBAE1F5F076500918A79 /* Assets.xcassets */,
 				4828FBB01F5F076500918A79 /* Main.storyboard */,
 				4828FBB31F5F076500918A79 /* Info.plist */,
@@ -142,6 +145,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				4828FBAB1F5F076500918A79 /* Interface.swift in Sources */,
+				48466CCC1F6FF46E008AD85A /* GradingEngine.swift in Sources */,
 				48466CCA1F6FF23C008AD85A /* Structures.swift in Sources */,
 				48466CC81F6FF21C008AD85A /* Extensions.swift in Sources */,
 			);

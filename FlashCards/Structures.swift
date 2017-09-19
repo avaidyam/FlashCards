@@ -55,3 +55,24 @@ public struct Card {
         self.backURL = back
     }
 }
+
+public class DeckDocument: NSDocument {
+    
+    public override class var autosavesInPlace: Bool {
+        return true
+    }
+    
+    public override func makeWindowControllers() {
+        let storyboard = NSStoryboard(name: NSStoryboard.Name("Main"), bundle: nil)
+        let windowController = storyboard.instantiateController(withIdentifier: NSStoryboard.SceneIdentifier("DeckWindowController")) as! DeckWindowController
+        self.addWindowController(windowController)
+    }
+    
+    public override func data(ofType typeName: String) throws -> Data {
+        throw NSError(domain: NSOSStatusErrorDomain, code: unimpErr, userInfo: nil)
+    }
+    
+    public override func read(from data: Data, ofType typeName: String) throws {
+        throw NSError(domain: NSOSStatusErrorDomain, code: unimpErr, userInfo: nil)
+    }
+}

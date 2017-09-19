@@ -12,12 +12,13 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
 }
 
-public class WindowController: NSWindowController {
+public class DeckWindowController: NSWindowController {
     
     /// The currently presented deck. Note: setting this resets the presented card.
     private var presentingDeck: Deck? = nil {
         didSet {
             self.presentingCard = self.presentingDeck?.cards.first
+            self.window?.title = self.presentingDeck?.url.lastPathComponent.components(separatedBy: ".").first ?? "Deck"
         }
     }
     
@@ -192,11 +193,6 @@ public class DeckListController: NSViewController, NSBrowserDelegate {
             return item.frontURL.lastPathComponent.components(separatedBy: ".").first ?? "card"
         }
         return "???"
-    }
-    
-    public func browser(_ browser: NSBrowser, headerViewControllerForItem item: Any?) -> NSViewController? {
-        print("HEADER", item as Any)
-        return self.header
     }
     
     public func browser(_ browser: NSBrowser, previewViewControllerForLeafItem item: Any) -> NSViewController? {
