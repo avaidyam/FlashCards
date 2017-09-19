@@ -48,24 +48,6 @@ public class DeckWindowController: NSWindowController {
         self.window?.titleVisibility = .hidden
     }
     
-    /// Select a new deck to present.
-    @IBAction public func select(_ sender: NSButton!) {
-        let menu = NSMenu(title: "Decks")
-        Deck.all.forEach {
-            let i = menu.addItem(withTitle: $0.url.lastPathComponent, action: #selector(self.choose(_:)), keyEquivalent: "")
-            i.representedObject = $0
-        }
-        if menu.items.count == 0 {
-            menu.addItem(withTitle: "No Decks Imported", action: nil, keyEquivalent: "")
-        }
-        menu.popUp(positioning: menu.items[0], at: NSPoint(x: 0, y: sender.frame.height), in: sender)
-    }
-    
-    /// Choose a new deck from the selection list.
-    @IBAction public func choose(_ sender: NSMenuItem!) {
-        self.presentingDeck = sender.representedObject as? Deck
-    }
-    
     /// Flip the current card.
     @IBAction public func flip(_ sender: NSButton!) {
         self.faceFront = !self.faceFront

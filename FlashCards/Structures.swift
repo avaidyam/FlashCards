@@ -4,11 +4,7 @@ public struct Deck {
     
     /// Get all decks (really just folders with images) in the default directory.
     public static var all: [Deck] {
-        let docs = FileManager.default.urls(for: .desktopDirectory, in: .userDomainMask)
-        let decks = docs[0].appendingPathComponent("Decks", isDirectory: true)
-        let urls = try? FileManager.default.contentsOfDirectory(at: decks,
-                                                                includingPropertiesForKeys: [.isDirectoryKey], options: [.skipsHiddenFiles])
-        return (urls ?? []).map { Deck($0) }
+        return []
     }
     
     /// Get all the cards (image pairs) in a deck.
@@ -28,13 +24,23 @@ public struct Deck {
 public struct Card {
     
     /// The front face of the card. Can be an image or a string.
-    public var front: NSImage {
-        return NSImage(byReferencing: self.frontURL)
+    public var front: Any? {
+        if self.frontURL.pathExtension == "png" || self.frontURL.pathExtension == "jpg" {
+            return NSImage(byReferencing: self.frontURL)
+        } else if self.frontURL.pathExtension == "rtf" || self.frontURL.pathExtension == "txt" {
+            return try? NSAttributedString(url: self.frontURL, options: [:], documentAttributes: nil)
+        }
+        return nil
     }
     
     /// The back face of the card. Can be an image or a string.
-    public var back: NSImage {
-        return NSImage(byReferencing: self.backURL)
+    public var back: Any? {
+        if self.backURL.pathExtension == "png" || self.backURL.pathExtension == "jpg" {
+            return NSImage(byReferencing: self.backURL)
+        } else if self.backURL.pathExtension == "rtf" || self.backURL.pathExtension == "txt" {
+            return try? NSAttributedString(url: self.backURL, options: [:], documentAttributes: nil)
+        }
+        return nil
     }
     
     public let frontURL: URL
