@@ -1,5 +1,8 @@
 import Cocoa
 
+// TODO: Alarm mode: cover as many cards as you can in X seconds
+// TODO: Alarm mode: per-card time is X seconds
+
 @NSApplicationMain
 class AppDelegate: NSObject, NSApplicationDelegate {
     
@@ -15,6 +18,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 }
 
 public class DeckWindowController: NSWindowController {
+    
+    public static var defaultTimerInterval: TimeInterval = 10.0
     
     /// Sets the currently presented deck. Note: setting this resets the presented card.
     public override var document: AnyObject? {
@@ -56,31 +61,41 @@ public class DeckWindowController: NSWindowController {
         return vc
     }()
     
+    // Present a new (if possible) shuffled card from the deck.
+    private func shuffleCard() {
+        guard let deck = self.document as? Deck else { return }
+        var card = deck.cards.random()
+        while self.presentingCard != nil && self.presentingCard == card && deck.cards.count > 1 {
+            card = deck.cards.random() // Avoid same-card collisions
+        }
+        self.presentingCard = card
+    }
+    
     public override func windowDidLoad() {
         self.window?.titleVisibility = .hidden
         
         // Randomize the next card.
         self.responseController?.responseHandler = { _ in
-            guard let deck = self.document as? Deck else { return }
-            var card = deck.cards.random()
-            while self.presentingCard != nil && self.presentingCard == card {
-                card = deck.cards.random()
+            self.shuffleCard()
+            if self.timeLeft != nil || self.hadTimerInterval {
+                self.hadTimerInterval = false
             }
-            self.presentingCard = card
         }
         
+        // Flip the card or show a response dialog.
         self.faceViewController?.pressHandler = {
             if self.faceFront {
                 self.faceFront = !self.faceFront
             } else {
+                if self.timeLeft != nil { self.hadTimerInterval = true }
                 self.contentViewController?.presentViewControllerAsSheet(self.responseController!)
             }
         }
         
         // Short circuit when timer goes off.
         self.timerAlarmHandler = {
-            self.faceFront = false
-            self.contentViewController?.presentViewControllerAsSheet(self.responseController!)
+            self.shuffleCard()
+            self.timeLeft = DeckWindowController.defaultTimerInterval
         }
     }
     
@@ -89,10 +104,21 @@ public class DeckWindowController: NSWindowController {
     // Handles timesync with the UI button and <= 0 values.
     private var timeLeft: TimeInterval? = nil {
         didSet {
+            
+            // If the timer reached 0sec, turn it off and handle it.
             if self.timeLeft != nil && self.timeLeft! <= 0.0 {
                 self.timeLeft = nil
                 self.timerAlarmHandler?()
+            } else if self.timeLeft != nil && self.timeLeft! > 0.0 {
+                
+                // If the timeLeft was set, automatically decrement it each second.
+                DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {
+                    guard self.timeLeft != nil else { return }
+                    self.timeLeft! -= 1.0
+                }
             }
+            
+            // Update UI title.
             if self.timeLeft == nil {
                 self.timer.title = "TIMER OFF"
             } else {
@@ -101,25 +127,19 @@ public class DeckWindowController: NSWindowController {
         }
     }
     
-    // Handles recursing each second.
-    private func updateTimer() {
-        guard self.timeLeft != nil else { return }
-        self.timeLeft! -= 1.0
-        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1), execute: self.updateTimer)
+    // Preserve the info of whether we previously had a timer going or not
+    // if a card was responded to.
+    var hadTimerInterval = false {
+        didSet { self.timeLeft = self.hadTimerInterval ? nil : DeckWindowController.defaultTimerInterval }
     }
-    
     @IBAction func timer(_ sender: NSButton!) {
-        if self.timeLeft == nil {
-            self.timeLeft = 60.0
-            self.updateTimer()
-        } else {
-            self.timeLeft = nil
-        }
+        self.timeLeft = self.timeLeft != nil ? nil : DeckWindowController.defaultTimerInterval
     }
     
     @IBAction func edit(_ sender: NSButton!) {
         guard let deck = self.document as? Deck else { return }
         self.listController?.representedObject = deck
+        self.timeLeft = nil // disable the timer
         self.contentViewController?.presentViewControllerAsSheet(self.listController!)
     }
     

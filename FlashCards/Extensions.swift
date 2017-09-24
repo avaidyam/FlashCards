@@ -136,7 +136,8 @@ extension NSMenu {
 
 public extension Collection where Index == Int {
     public func random() -> Iterator.Element? {
-        return self.isEmpty ? nil : self[Int(arc4random_uniform(UInt32(self.endIndex)))]
+        guard !self.isEmpty else { return nil }
+        return self[Int(arc4random_uniform(UInt32(self.endIndex)))]
     }
 }
 
