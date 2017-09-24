@@ -38,7 +38,7 @@ q - quality of the response in the 0-5 grade scale.
 8. After each repetition session of a given day repeat again all items that scored below four in the quality assessment. Continue the repetitions until all of these items score at least four.
  */
 
-public struct Card: Hashable, Comparable, Equatable {
+public struct Card: Codable, Hashable, Comparable, Equatable {
     
     public enum Grade: Int, CustomStringConvertible {
         case null, bad, fail, pass, good, bright
@@ -70,6 +70,10 @@ public struct Card: Hashable, Comparable, Equatable {
     public var previousDate: TimeInterval = 0 /* @init: never reviewed before */
     public var nextDate = Date().timeIntervalSince1970
     
+    public let uuid: UUID
+    public let frontURL: URL
+    public let backURL: URL
+    
     /// The front face of the card. Can be an image or a string.
     public var front: Any? {
         if self.frontURL.pathExtension == "png" || self.frontURL.pathExtension == "jpg" {
@@ -90,22 +94,22 @@ public struct Card: Hashable, Comparable, Equatable {
         return nil
     }
     
-    public let frontURL: URL
-    public let backURL: URL
+    public init(id: UUID = UUID(), front frontURL: URL, back backURL: URL) {
+        self.uuid = id
+        self.frontURL = frontURL
+        self.backURL = backURL
+    }
     
     /// Match a front face to a back face for a card.
+    /// Automatically interpolate from the front URL the back URL if possible.
+    /// Note: this assumes the naming is *.front.* and *.back.* for the card face URLs.
     internal init(front frontURL: URL) throws {
-        self.frontURL = frontURL
-        
-        // Automatically interpolate from the front URL the back URL if possible.
-        // Note: this assumes the naming is *.front.* and *.back.* for the card face URLs.
-        let pc = self.frontURL.lastPathComponent.replacingOccurrences(of: ".front.", with: ".back.")
-        let back = self.frontURL.deletingLastPathComponent().appendingPathComponent(pc)
-        if !(try back.checkResourceIsReachable()) {
+        let pc = frontURL.lastPathComponent.replacingOccurrences(of: ".front.", with: ".back.")
+        let backURL = frontURL.deletingLastPathComponent().appendingPathComponent(pc)
+        if !(try backURL.checkResourceIsReachable()) {
             throw CocoaError(.fileNoSuchFile)
         }
-        
-        self.backURL = back
+        self.init(front: frontURL, back: backURL)
     }
 }
 

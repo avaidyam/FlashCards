@@ -25,7 +25,14 @@ public class DeckWindowController: NSWindowController {
     public override var document: AnyObject? {
         didSet {
             guard let deck = self.document as? Deck else { return }
-            self.presentingCard = deck.cards.random()
+            DispatchQueue.main.async {
+                if deck.cards.count == 0 {
+                    // Auto-open edit panel to start adding cards.
+                    //self.edit(nil)
+                } else {
+                    self.presentingCard = deck.cards.random()
+                }
+            }
         }
     }
     
@@ -285,26 +292,36 @@ public class DeckListController: NSViewController, NSTableViewDelegate, NSTableV
     }
     
     @IBAction func imageClick(_ sender: NSImageView!) {
+        guard self.tableView.selectedRowIndexes.count == 1 else { return }
+        //deck.cards[self.tableView.selectedRow]
         print("click!", sender)
     }
     
     @IBAction func addCard(_ sender: NSButton!) {
-        print("Add card!")
+        guard let deck = self.representedObject as? Deck else { return }
+        deck.cards.append(Card(front: URL(fileURLWithPath: "/"), back: URL(fileURLWithPath: "/")))
+        self.tableView.reloadData()
     }
     
     @IBAction func removeCard(_ sender: NSButton!) {
-        print("Remove cards!", self.tableView.selectedRowIndexes)
+        guard let deck = self.representedObject as? Deck else { return }
+        self.tableView.selectedRowIndexes.reversed().forEach {
+            deck.cards.remove(at: $0)
+        }
+        self.tableView.reloadData()
     }
     
     /// Add a new card by taking a screenshot and marking it up.
     // TODO: MAKE THIS DO REAL THINGS
     @IBAction public func screenshot(_ sender: NSButton!) {
+        guard let deck = self.representedObject as? Deck else { return }
         
         // Hide the window, take the screenshot, and show the window afterwards!
         NSApp.hide(nil)
         DispatchQueue.global(qos: .userInteractive).async {
             defer {
                 DispatchQueue.main.async {
+                    NSApp.unhide(nil)
                     self.view.window?.sheetParent?.makeKeyAndOrderFront(nil)
                 }
             }
@@ -312,14 +329,21 @@ public class DeckListController: NSViewController, NSTableViewDelegate, NSTableV
                 let image = try NSScreen.screenshot()
                 let marked = try image.markup(in: self.view)
                 
-                // Format the date...
-                let df = DateFormatter()
-                df.dateStyle = .medium
-                df.timeStyle = .medium
-                let date = df.string(from: Date())
+                // Generate the correct unique file locations.
+                guard let base = deck.fileURL?.appendingPathComponent("Contents") else {
+                    throw CocoaError(.fileNoSuchFile)
+                }
+                let imageURL = base.appendingPathComponent("\(UUID().uuidString).png")
+                let markedURL = base.appendingPathComponent("\(UUID().uuidString) - Markup.png")
                 
-                try image.write(to: URL(fileURLWithPath: "/Users/aditya/Desktop/Card Front \(date).png"), type: .png)
-                try marked.write(to: URL(fileURLWithPath: "/Users/aditya/Desktop/Card Back \(date).png"), type: .png)
+                try image.write(to: imageURL, type: .png)
+                try marked.write(to: markedURL, type: .png)
+                
+                // Update with a new card.
+                DispatchQueue.main.async {
+                    deck.cards.append(Card(front: imageURL, back: markedURL))
+                    self.tableView.reloadData()
+                }
             } catch(let error) {
                 DispatchQueue.main.async {
                     self.presentError(error)

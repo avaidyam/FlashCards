@@ -867,7 +867,7 @@
                                 </constraints>
                                 <imageCell key="cell" selectable="YES" editable="YES" alignment="left" imageScaling="proportionallyUpOrDown" imageFrameStyle="grayBezel" id="LPI-Ex-CKt"/>
                                 <connections>
-                                    <action selector="open:" target="ynl-gx-Wfh" id="Mlq-T8-6F8"/>
+                                    <action selector="imageClick:" target="02c-yu-gN4" id="RyZ-m9-D1c"/>
                                 </connections>
                             </imageView>
                             <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="WNF-iM-U8A" customClass="ClickableImageView" customModule="FlashCards" customModuleProvider="target">
@@ -877,7 +877,7 @@
                                 </constraints>
                                 <imageCell key="cell" selectable="YES" editable="YES" alignment="left" imageScaling="proportionallyUpOrDown" imageFrameStyle="grayBezel" id="YA0-ZA-yr5"/>
                                 <connections>
-                                    <action selector="open:" target="6CN-62-jEY" id="8N7-y7-cPE"/>
+                                    <action selector="imageClick:" target="02c-yu-gN4" id="wtp-Q4-mr5"/>
                                 </connections>
                             </imageView>
                             <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="gUg-Qi-ox5" userLabel="Add Button">
@@ -975,7 +975,7 @@
                     </items>
                 </menu>
             </objects>
-            <point key="canvasLocation" x="1194.5" y="894.5"/>
+            <point key="canvasLocation" x="596" y="648"/>
         </scene>
         <!--Response View Controller-->
         <scene sceneID="4Yf-JB-44Z">
@@ -1070,7 +1070,7 @@
                 </viewController>
                 <customObject id="gAe-4Z-YwS" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-606.5" y="397.5"/>
+            <point key="canvasLocation" x="-468" y="593"/>
         </scene>
         <!--Face View Controller-->
         <scene sceneID="7pR-wb-wVm">
