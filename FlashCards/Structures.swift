@@ -66,16 +66,27 @@ public class DeckDocument: NSDocument {
     
     private var deck: Deck? = nil
     
+    public override init() {
+        super.init()
+        Swift.print(self.fileURL)
+        self.updateChangeCount(.changeDone)
+    }
+    
     public override class var autosavesInPlace: Bool {
         return true
     }
     
+    public override class func canConcurrentlyReadDocuments(ofType typeName: String) -> Bool {
+        return true
+    }
+    
+    /*
     public override var displayName: String! {
         get {
             return self.deck?.url.lastPathComponent.components(separatedBy: ".").first ?? "Untitled"
         }
         set {}
-    }
+    }*/
     
     public override func makeWindowControllers() {
         let storyboard = NSStoryboard(name: NSStoryboard.Name("Main"), bundle: nil)
@@ -86,5 +97,22 @@ public class DeckDocument: NSDocument {
     
     public override func read(from url: URL, ofType typeName: String) throws {
         self.deck = Deck(url)
+    }
+    
+    public override func writeSafely(to url: URL, ofType typeName: String, for op: NSDocument.SaveOperationType) throws {
+        guard op == .saveAsOperation || op == .saveToOperation else { return }
+        Swift.print("Writing package...")
+        
+        let wrapper = FileWrapper(directoryWithFileWrappers: [
+            "Contents": FileWrapper(directoryWithFileWrappers: [
+                ://"": ""
+            ])
+        ])
+        try wrapper.write(to: url, options: [], originalContentsURL: nil)
+        
+        // If this is a first-time save, cache our deck.
+        if self.deck == nil {
+            self.deck = Deck(url)
+        }
     }
 }
