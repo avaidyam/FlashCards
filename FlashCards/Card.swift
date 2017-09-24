@@ -1,7 +1,35 @@
 import Cocoa
 
-// TODO: REMOVE
-public struct Card: Equatable {
+public class Card: Equatable, Hashable {
+    
+    public enum Grade: Int, CustomStringConvertible {
+        case null, bad, fail, pass, good, bright
+        public var description: String {
+            switch self {
+            case .null:
+                return "complete blackout"
+            case .bad:
+                return "incorrect response; the correct one remembered"
+            case .fail:
+                return "incorrect response; where the correct one seemed easy to recall"
+            case .pass:
+                return "correct response recalled with serious difficulty"
+            case .good:
+                return "correct response after a hesitation"
+            case .bright:
+                return "perfect response"
+            }
+        }
+    }
+    
+    /// Default Easiness Factor = default 1.3
+    public static var defaultEasinessFactor: Double = 1.3
+    
+    public var repetition = 0
+    public var interval = 0
+    public var easinessFactor = 2.5
+    public var previousDate = Date().timeIntervalSince1970
+    public var nextDate = Date().timeIntervalSince1970
     
     /// The front face of the card. Can be an image or a string.
     public var front: Any? {
@@ -40,56 +68,9 @@ public struct Card: Equatable {
         
         self.backURL = back
     }
-    
-    public static func ==(lhs: Card, rhs: Card) -> Bool {
-        return (lhs.frontURL == rhs.frontURL && lhs.backURL == rhs.backURL)
-    }
 }
 
-public class Flashcard: Equatable, Hashable {
-    
-    public enum Grade: Int, CustomStringConvertible {
-        case null, bad, fail, pass, good, bright
-        public var description: String {
-            switch self {
-            case .null:
-                return "complete blackout"
-            case .bad:
-                return "incorrect response; the correct one remembered"
-            case .fail:
-                return "incorrect response; where the correct one seemed easy to recall"
-            case .pass:
-                return "correct response recalled with serious difficulty"
-            case .good:
-                return "correct response after a hesitation"
-            case .bright:
-                return "perfect response"
-            }
-        }
-    }
-    
-    /// Easiness Factor; The default value is 1.3
-    public static var easinessFactor: Double = 1.3
-    
-    public var front: String
-    public var back: String
-    
-    public var uuid: UUID
-    
-    public var repetition = 0
-    public var interval = 0
-    public var easinessFactor = 2.5
-    public var previousDate = Date().timeIntervalSince1970
-    public var nextDate = Date().timeIntervalSince1970
-    
-    public init(front: String, back: String) {
-        self.uuid = UUID()
-        self.front = front
-        self.back = back
-    }
-}
-
-public extension Flashcard {
+public extension Card {
     
     /// Grade Flash card
     ///
@@ -105,8 +86,8 @@ public extension Flashcard {
         } else {
             let qualityFactor = Double(Grade.bright.rawValue - cardGrade)
             let newEasinessFactor = self.easinessFactor + (0.1 - qualityFactor * (0.08 + qualityFactor * 0.02))
-            if newEasinessFactor < Flashcard.easinessFactor {
-                self.easinessFactor = Flashcard.easinessFactor
+            if newEasinessFactor < Card.defaultEasinessFactor {
+                self.easinessFactor = Card.defaultEasinessFactor
             } else {
                 self.easinessFactor = newEasinessFactor
             }
@@ -137,14 +118,12 @@ public extension Flashcard {
     }
 }
 
-public extension Flashcard {
+public extension Card {
     public var hashValue: Int {
-        return uuid.hashValue
+        return self.frontURL.hashValue &+ self.backURL.hashValue
     }
     
-    public static func == (lhs: Flashcard, rhs: Flashcard) -> Bool {
-        return lhs.uuid == rhs.uuid &&
-            lhs.front == rhs.front &&
-            lhs.back == rhs.back
+    public static func ==(lhs: Card, rhs: Card) -> Bool {
+        return (lhs.frontURL == rhs.frontURL && lhs.backURL == rhs.backURL)
     }
 }

@@ -712,10 +712,10 @@
                                 <toolbarItem implicitItemIdentifier="NSToolbarFlexibleSpaceItem" id="525-tQ-orD"/>
                                 <toolbarItem implicitItemIdentifier="678F9A19-77B4-444E-A098-93869E126F54" label="Custom View" paletteLabel="Custom View" id="H41-wO-cnh">
                                     <nil key="toolTip"/>
-                                    <size key="minSize" width="64" height="22"/>
-                                    <size key="maxSize" width="82" height="32"/>
+                                    <size key="minSize" width="76" height="22"/>
+                                    <size key="maxSize" width="76" height="22"/>
                                     <button key="view" verticalHuggingPriority="750" id="WIP-UA-UHd">
-                                        <rect key="frame" x="3" y="14" width="71" height="22"/>
+                                        <rect key="frame" x="0.0" y="14" width="76" height="22"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                         <buttonCell key="cell" type="bevel" title="TIMER OFF" bezelStyle="rounded" alignment="right" imageScaling="proportionallyDown" inset="2" id="KCw-4R-2R7">
                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
