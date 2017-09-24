@@ -152,3 +152,24 @@ public class FirstResponderView: NSView {
         return true
     }
 }
+
+// Clickable NSImageView
+public class ClickableImageView: NSImageView {
+    
+    public override func mouseDown(with event: NSEvent) {
+        if event.type != .leftMouseDown {
+            super.mouseDown(with: event)
+        }
+    }
+    
+    public override func mouseUp(with event: NSEvent) {
+        if event.type != .leftMouseUp {
+            super.mouseUp(with: event)
+        } else {
+            let point = self.convert(event.locationInWindow, from: nil)
+            if self.mouse(point, in: self.bounds) && self.action != nil {
+                NSApp.sendAction(self.action!, to: self.target, from: self)
+            }
+        }
+    }
+}

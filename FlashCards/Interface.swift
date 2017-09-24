@@ -44,7 +44,13 @@ public class DeckWindowController: NSWindowController {
     
     private lazy var responseController: ResponseViewController? = {
         let storyboard = NSStoryboard(name: NSStoryboard.Name("Main"), bundle: nil)
-        let vc = storyboard.instantiateController(withIdentifier: NSStoryboard.SceneIdentifier("ResponseController")) as! ResponseViewController
+        let vc = storyboard.instantiateController(withIdentifier: NSStoryboard.SceneIdentifier("ResponseViewController")) as! ResponseViewController
+        return vc
+    }()
+    
+    private lazy var listController: DeckListController? = {
+        let storyboard = NSStoryboard(name: NSStoryboard.Name("Main"), bundle: nil)
+        let vc = storyboard.instantiateController(withIdentifier: NSStoryboard.SceneIdentifier("DeckListController")) as! DeckListController
         return vc
     }()
     
@@ -67,6 +73,12 @@ public class DeckWindowController: NSWindowController {
             }
             self.presentingCard = card
         }
+    }
+    
+    @IBAction func edit(_ sender: NSButton!) {
+        guard let deck = self.document as? DeckDocument else { return }
+        self.listController?.representedObject = deck.cards
+        self.contentViewController?.presentViewControllerAsSheet(self.listController!)
     }
     
     public override func keyDown(with event: NSEvent) {
@@ -160,50 +172,68 @@ public class ResponseViewController: NSViewController {
 }
 
 /// Display a list of each saved deck and each card within them, available for editing.
-public class DeckListController: NSViewController, NSBrowserDelegate {
+public class DeckListController: NSViewController, NSTableViewDelegate, NSTableViewDataSource {
     
-    @IBOutlet var header: NSViewController?
-    @IBOutlet var preview: NSViewController?
+    @IBOutlet var tableView: NSTableView!
+    @IBOutlet var frontImage: NSImageView!
+    @IBOutlet var backImage: NSImageView!
+    @IBOutlet var noneLabel: NSTextField!
     
-    public func browser(_ browser: NSBrowser, numberOfChildrenOfItem item: Any?) -> Int {
-        /*if item == nil {
-            return Deck.all.count
+    public override func viewWillAppear() {
+        self.tableViewSelectionDidChange(Notification(name: NSTableView.selectionDidChangeNotification))
+    }
+    
+    private var cards: [Card] {
+        return self.representedObject as? [Card] ?? []
+    }
+    
+    public func numberOfRows(in tableView: NSTableView) -> Int {
+        return self.cards.count
+    }
+    
+    public func tableView(_ tableView: NSTableView, objectValueFor tableColumn: NSTableColumn?, row: Int) -> Any? {
+        return self.cards[row]
+    }
+    
+    public func tableView(_ tableView: NSTableView, viewFor tableColumn: NSTableColumn?, row: Int) -> NSView? {
+        let view = self.tableView.makeView(withIdentifier: NSUserInterfaceItemIdentifier("Default"), owner: self) as? NSTableCellView
+        view?.textField?.stringValue = "\(row + 1)" //self.cards[row]
+        return view
+    }
+    
+    public func tableViewSelectionDidChange(_ notification: Notification) {
+        if self.tableView.selectedRowIndexes.count == 1 {
+            let card = self.cards[self.tableView.selectedRow]
+            
+            self.frontImage.image = card.front as? NSImage
+            self.backImage.image = card.back as? NSImage
+            self.frontImage.isHidden = false
+            self.backImage.isHidden = false
+            self.noneLabel.isHidden = true
         } else {
-            return (item as! Deck).cards.count
-        }*/
-        return 0
+            self.frontImage.image = nil
+            self.backImage.image = nil
+            self.frontImage.isHidden = true
+            self.backImage.isHidden = true
+            self.noneLabel.isHidden = false
+        }
     }
     
-    public func browser(_ browser: NSBrowser, child index: Int, ofItem item: Any?) -> Any {
-        /*if item == nil {
-            return Deck.all[index]
-        } else {
-            return (item as! Deck).cards[index]
-        }*/
-        return "nil"
+    @IBAction func imageClick(_ sender: NSImageView!) {
+        print("click!", sender)
     }
     
-    public func browser(_ browser: NSBrowser, isLeafItem item: Any?) -> Bool {
-        return (item is Card)
+    @IBAction func addCard(_ sender: NSButton!) {
+        print("Add card!")
     }
     
-    public func browser(_ browser: NSBrowser, objectValueForItem item: Any?) -> Any? {
-        /*if let item = item as? Deck {
-            return item.url.lastPathComponent
-        } else if let item = item as? Card {
-            return item.frontURL.lastPathComponent.components(separatedBy: ".").first ?? "card"
-        }*/
-        return "???"
-    }
-    
-    public func browser(_ browser: NSBrowser, previewViewControllerForLeafItem item: Any) -> NSViewController? {
-        print("PREVIEW", item)
-        return self.preview
+    @IBAction func removeCard(_ sender: NSButton!) {
+        print("Remove cards!", self.tableView.selectedRowIndexes)
     }
     
     /// Add a new card by taking a screenshot and marking it up.
     // TODO: MAKE THIS DO REAL THINGS
-    @IBAction public func addCard(_ sender: NSButton!) {
+    @IBAction public func screenshot(_ sender: NSButton!) {
         
         // Hide the window, take the screenshot, and show the window afterwards!
         NSApp.hide(nil)
