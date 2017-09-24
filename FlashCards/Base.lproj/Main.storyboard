@@ -818,7 +818,7 @@
                                     <autoresizingMask key="autoresizingMask"/>
                                 </scroller>
                                 <scroller key="verticalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="NO" id="Zsg-8m-PXB">
-                                    <rect key="frame" x="-100" y="-100" width="15" height="225"/>
+                                    <rect key="frame" x="56" y="23" width="16" height="216"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                 </scroller>
                                 <tableHeaderView key="headerView" id="uTb-6f-pgq">
@@ -910,7 +910,7 @@
                                 <constraints>
                                     <constraint firstAttribute="height" constant="22" id="NEq-G3-ly7"/>
                                 </constraints>
-                                <buttonCell key="cell" type="smallSquare" bezelStyle="smallSquare" imagePosition="overlaps" alignment="center" lineBreakMode="truncatingTail" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="aNa-nw-j3h">
+                                <buttonCell key="cell" type="smallSquare" bezelStyle="smallSquare" imagePosition="overlaps" alignment="center" lineBreakMode="truncatingTail" refusesFirstResponder="YES" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="aNa-nw-j3h">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>

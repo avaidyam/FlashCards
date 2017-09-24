@@ -180,6 +180,7 @@ public class DeckListController: NSViewController, NSTableViewDelegate, NSTableV
     @IBOutlet var noneLabel: NSTextField!
     
     public override func viewWillAppear() {
+        self.tableView.enclosingScrollView?.scrollerStyle = .overlay // FIXME in IB
         self.tableViewSelectionDidChange(Notification(name: NSTableView.selectionDidChangeNotification))
     }
     
