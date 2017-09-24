@@ -20,7 +20,7 @@ public class DeckWindowController: NSWindowController {
     public override var document: AnyObject? {
         didSet {
             guard let deck = self.document as? DeckDocument else { return }
-            self.presentingCard = deck.cards.first
+            self.presentingCard = deck.cards.random()
         }
     }
     
@@ -52,19 +52,21 @@ public class DeckWindowController: NSWindowController {
         self.window?.titleVisibility = .hidden
         self.faceViewController?.pressHandler = {
             if self.faceFront {
-                self.flip(nil)
+                self.faceFront = !self.faceFront
             } else {
                 self.contentViewController?.presentViewControllerAsSheet(self.responseController!)
             }
         }
+        
+        // Randomize the next card.
         self.responseController?.responseHandler = { _ in
-            self.next(nil)
+            guard let deck = self.document as? DeckDocument else { return }
+            var card = deck.cards.random()
+            while self.presentingCard != nil && self.presentingCard == card {
+                card = deck.cards.random()
+            }
+            self.presentingCard = card
         }
-    }
-    
-    /// Flip the current card.
-    @IBAction public func flip(_ sender: NSButton!) {
-        self.faceFront = !self.faceFront
     }
     
     public override func keyDown(with event: NSEvent) {
@@ -76,20 +78,6 @@ public class DeckWindowController: NSWindowController {
         if event.keyCode == 49 {
             self.faceViewController?.pressHandler?()
         }
-    }
-    
-    /// Show the previous card in the deck and wrap around if at the start.
-    @IBAction public func prev(_ sender: NSButton!) {
-        guard let deck = self.document as? DeckDocument, let card = self.presentingCard else { return }
-        let nextIdx = deck.cards.index { $0.frontURL == card.frontURL }?.advanced(by: -1) ?? 0
-        self.presentingCard = deck.cards[safe: nextIdx] ?? deck.cards.last
-    }
-    
-    /// Show the next card in the deck and wrap around if at the end.
-    @IBAction public func next(_ sender: NSButton!) {
-        guard let deck = self.document as? DeckDocument, let card = self.presentingCard else { return }
-        let nextIdx = deck.cards.index { $0.frontURL == card.frontURL }?.advanced(by: +1) ?? 0
-        self.presentingCard = deck.cards[safe: nextIdx] ?? deck.cards.first
     }
 }
 

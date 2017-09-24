@@ -1,6 +1,6 @@
 import Cocoa
 
-public struct Card {
+public struct Card: Equatable {
     
     /// The front face of the card. Can be an image or a string.
     public var front: Any? {
@@ -38,6 +38,10 @@ public struct Card {
         }
         
         self.backURL = back
+    }
+    
+    public static func ==(lhs: Card, rhs: Card) -> Bool {
+        return (lhs.frontURL == rhs.frontURL && lhs.backURL == rhs.backURL)
     }
 }
 
