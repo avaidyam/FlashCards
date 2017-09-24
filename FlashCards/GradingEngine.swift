@@ -3,20 +3,7 @@ import Cocoa
 public class GradingEngine {
     
     public enum Grade: Int, CustomStringConvertible {
-        
-        /// complete blackout.
-        case null
-        /// incorrect response; the correct one remembered
-        case bad
-        /// incorrect response; where the correct one seemed easy to recall
-        case fail
-        /// correct response recalled with serious difficulty
-        case pass
-        /// correct response after a hesitation
-        case good
-        /// perfect response
-        case bright
-        
+        case null, bad, fail, pass, good, bright
         public var description: String {
             switch self {
             case .null:

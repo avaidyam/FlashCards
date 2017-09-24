@@ -16,10 +16,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
 public class DeckWindowController: NSWindowController {
     
-    /// The currently presented deck. Note: setting this resets the presented card.
-    public var presentingDeck: Deck? = nil {
+    /// Sets the currently presented deck. Note: setting this resets the presented card.
+    public override var document: AnyObject? {
         didSet {
-            self.presentingCard = self.presentingDeck?.cards.first
+            guard let deck = self.document as? DeckDocument else { return }
+            self.presentingCard = deck.cards.first
         }
     }
     
@@ -41,8 +42,24 @@ public class DeckWindowController: NSWindowController {
         return self.contentViewController as? FaceViewController
     }
     
+    private lazy var responseController: ResponseViewController? = {
+        let storyboard = NSStoryboard(name: NSStoryboard.Name("Main"), bundle: nil)
+        let vc = storyboard.instantiateController(withIdentifier: NSStoryboard.SceneIdentifier("ResponseController")) as! ResponseViewController
+        return vc
+    }()
+    
     public override func windowDidLoad() {
         self.window?.titleVisibility = .hidden
+        self.faceViewController?.pressHandler = {
+            if self.faceFront {
+                self.flip(nil)
+            } else {
+                self.contentViewController?.presentViewControllerAsSheet(self.responseController!)
+            }
+        }
+        self.responseController?.responseHandler = { _ in
+            self.next(nil)
+        }
     }
     
     /// Flip the current card.
@@ -50,16 +67,27 @@ public class DeckWindowController: NSWindowController {
         self.faceFront = !self.faceFront
     }
     
+    public override func keyDown(with event: NSEvent) {
+        // Ignore the silly beep.
+    }
+    
+    // Patch spacebar into the flipping mechanism.
+    public override func keyUp(with event: NSEvent) {
+        if event.keyCode == 49 {
+            self.faceViewController?.pressHandler?()
+        }
+    }
+    
     /// Show the previous card in the deck and wrap around if at the start.
     @IBAction public func prev(_ sender: NSButton!) {
-        guard let deck = self.presentingDeck, let card = self.presentingCard else { return }
+        guard let deck = self.document as? DeckDocument, let card = self.presentingCard else { return }
         let nextIdx = deck.cards.index { $0.frontURL == card.frontURL }?.advanced(by: -1) ?? 0
         self.presentingCard = deck.cards[safe: nextIdx] ?? deck.cards.last
     }
     
     /// Show the next card in the deck and wrap around if at the end.
     @IBAction public func next(_ sender: NSButton!) {
-        guard let deck = self.presentingDeck, let card = self.presentingCard else { return }
+        guard let deck = self.document as? DeckDocument, let card = self.presentingCard else { return }
         let nextIdx = deck.cards.index { $0.frontURL == card.frontURL }?.advanced(by: +1) ?? 0
         self.presentingCard = deck.cards[safe: nextIdx] ?? deck.cards.first
     }
@@ -71,8 +99,17 @@ public class FaceViewController: NSViewController {
     @IBOutlet private var textView: NSTextView! = nil
     @IBOutlet private var noneLabel: NSTextField! = nil
     
+    // Used by clients to track if pressed.
+    public var pressHandler: (() -> ())? = nil
+    
     public override func viewDidLoad() {
         self.representedObject = nil
+    }
+    
+    public override func mouseUp(with event: NSEvent) {
+        guard self.view.mouse(self.view.convert(event.locationInWindow, from: nil),
+                              in: self.view.bounds) else { return }
+        self.pressHandler?()
     }
     
     // Toggle between the image view and text view based on the represented object type.
@@ -113,6 +150,27 @@ public class FaceViewController: NSViewController {
     }
 }
 
+public class ResponseViewController: NSViewController {
+    
+    // Used by clients to track if pressed.
+    public var responseHandler: ((Int) -> ())? = nil
+    
+    public override func keyDown(with event: NSEvent) {
+        // Ignore the silly beep.
+    }
+    
+    public override func keyUp(with event: NSEvent) {
+        guard event.keyCode >= 18 && event.keyCode <= 23 else { return }
+        self.dismiss(self)
+        self.responseHandler?(Int(event.keyCode - 17))
+    }
+    
+    @IBAction func respond(_ sender: NSSegmentedControl!) {
+        self.dismiss(self)
+        self.responseHandler?(sender.tag)
+    }
+}
+
 /// Display a list of each saved deck and each card within them, available for editing.
 public class DeckListController: NSViewController, NSBrowserDelegate {
     
@@ -120,19 +178,21 @@ public class DeckListController: NSViewController, NSBrowserDelegate {
     @IBOutlet var preview: NSViewController?
     
     public func browser(_ browser: NSBrowser, numberOfChildrenOfItem item: Any?) -> Int {
-        if item == nil {
+        /*if item == nil {
             return Deck.all.count
         } else {
             return (item as! Deck).cards.count
-        }
+        }*/
+        return 0
     }
     
     public func browser(_ browser: NSBrowser, child index: Int, ofItem item: Any?) -> Any {
-        if item == nil {
+        /*if item == nil {
             return Deck.all[index]
         } else {
             return (item as! Deck).cards[index]
-        }
+        }*/
+        return "nil"
     }
     
     public func browser(_ browser: NSBrowser, isLeafItem item: Any?) -> Bool {
@@ -140,11 +200,11 @@ public class DeckListController: NSViewController, NSBrowserDelegate {
     }
     
     public func browser(_ browser: NSBrowser, objectValueForItem item: Any?) -> Any? {
-        if let item = item as? Deck {
+        /*if let item = item as? Deck {
             return item.url.lastPathComponent
         } else if let item = item as? Card {
             return item.frontURL.lastPathComponent.components(separatedBy: ".").first ?? "card"
-        }
+        }*/
         return "???"
     }
     
@@ -158,16 +218,30 @@ public class DeckListController: NSViewController, NSBrowserDelegate {
     @IBAction public func addCard(_ sender: NSButton!) {
         
         // Hide the window, take the screenshot, and show the window afterwards!
-        self.view.window?.sheetParent?.orderOut(nil)
+        NSApp.hide(nil)
         DispatchQueue.global(qos: .userInteractive).async {
-            let img = try? NSScreen.screenshot()
-            let marked = try? img!.markup(in: self.view)
-            
-            try? img?.write(to: URL(fileURLWithPath: "/Users/aditya/Desktop/Card Front \(Date()).png"), type: .png)
-            try? marked?.write(to: URL(fileURLWithPath: "/Users/aditya/Desktop/Card Back \(Date()).png"), type: .png)
-            
-            DispatchQueue.main.async {
-                self.view.window?.sheetParent?.makeKeyAndOrderFront(nil)
+            defer {
+                DispatchQueue.main.async {
+                    self.view.window?.sheetParent?.makeKeyAndOrderFront(nil)
+                }
+            }
+            do {
+                let image = try NSScreen.screenshot()
+                let marked = try image.markup(in: self.view)
+                
+                // Format the date...
+                let df = DateFormatter()
+                df.dateStyle = .medium
+                df.timeStyle = .medium
+                let date = df.string(from: Date())
+                
+                try image.write(to: URL(fileURLWithPath: "/Users/aditya/Desktop/Card Front \(date).png"), type: .png)
+                try marked.write(to: URL(fileURLWithPath: "/Users/aditya/Desktop/Card Back \(date).png"), type: .png)
+            } catch(let error) {
+                DispatchQueue.main.async {
+                    self.presentError(error)
+                    NSApp.unhide(nil)
+                }
             }
         }
     }

@@ -1,5 +1,35 @@
 import Cocoa
 
+public enum ScreenshotError: LocalizedError {
+    case cancelled
+    case cannotMarkup
+    case markupCancelled
+    
+    public var errorDescription: String? {
+        switch self {
+        case .cancelled: return "The screenshot was cancelled."
+        case .cannotMarkup: return "Can't markup the image."
+        case .markupCancelled: return "The markup was cancelled."
+        }
+    }
+    
+    public var failureReason: String? {
+        switch self {
+        case .cancelled: return "You may have cancelled the screenshot."
+        case .cannotMarkup: return "Couldn't find the markup service."
+        case .markupCancelled: return "You cancelled the markup dialog."
+        }
+    }
+    
+    public var recoverySuggestion: String? {
+        switch self {
+        case .cancelled: return "Try taking the screenshot again. Be sure not to single-click, but drag a region or press space to select a window."
+        case .cannotMarkup: return "Try upgrading your Mac to the latest version first."
+        case .markupCancelled: return "Try marking up the image again. Be sure not to press cancel."
+        }
+    }
+}
+
 extension NSScreen {
     
     /// Take a screenshot using the system function and provide it as an image.
@@ -24,7 +54,7 @@ extension NSScreen {
         }
         s.wait()
         
-        guard img != nil else { throw CocoaError(.fileNoSuchFile) }
+        guard img != nil else { throw ScreenshotError.cancelled }
         return img!
     }
 }
@@ -56,6 +86,10 @@ extension NSImage {
                     self.handler(NSImage(contentsOf: url as! URL))
                 }
             }
+            
+            func sharingService(_ sharingService: NSSharingService, didFailToShareItems items: [Any], error: Error) {
+                self.handler(nil)
+            }
         }
         
         var img: NSImage? = nil
@@ -66,7 +100,7 @@ extension NSImage {
         if service_ == nil {
             service_ = NSSharingService(named: NSSharingService.Name(rawValue: "com.apple.Preview.Markup"))
         }
-        guard let service = service_ else { throw CocoaError(.fileNoSuchFile) }
+        guard let service = service_ else { throw ScreenshotError.cannotMarkup }
         
         // Perform the UI action.
         let markup = MarkupDelegate(view: view) {
@@ -76,7 +110,7 @@ extension NSImage {
         service.perform(withItems: [self])
         
         s.wait()
-        guard img != nil else { throw CocoaError(.fileNoSuchFile) }
+        guard img != nil else { throw ScreenshotError.markupCancelled }
         return img!
     }
     
@@ -104,5 +138,11 @@ extension Array {
     
     public subscript(safe index: Int) -> Element? {
         return index >= 0 && index < self.count ? self[index] : nil
+    }
+}
+
+public class FirstResponderView: NSView {
+    public override var acceptsFirstResponder: Bool {
+        return true
     }
 }

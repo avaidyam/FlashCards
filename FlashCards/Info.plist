@@ -12,7 +12,7 @@
 				<string>deck</string>
 			</array>
 			<key>CFBundleTypeName</key>
-			<string>FlashCards Deck</string>
+			<string>FlashCardsDeck</string>
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
 			<key>LSHandlerRank</key>
