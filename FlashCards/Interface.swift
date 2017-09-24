@@ -1,7 +1,6 @@
 import Cocoa
 
-// TODO: Alarm mode: cover as many cards as you can in X seconds
-// TODO: Alarm mode: per-card time is X seconds
+// TODO: Add alarm mode: cover as many cards as you can in X seconds.
 
 @NSApplicationMain
 class AppDelegate: NSObject, NSApplicationDelegate {
@@ -19,6 +18,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
 public class DeckWindowController: NSWindowController {
     
+    // Default per-card timer interval.
     public static var defaultTimerInterval: TimeInterval = 10.0
     
     /// Sets the currently presented deck. Note: setting this resets the presented card.
@@ -75,7 +75,8 @@ public class DeckWindowController: NSWindowController {
         self.window?.titleVisibility = .hidden
         
         // Randomize the next card.
-        self.responseController?.responseHandler = { _ in
+        self.responseController?.responseHandler = {
+            self.presentingCard?.grade(Card.Grade(rawValue: $0)!)
             self.shuffleCard()
             if self.timeLeft != nil || self.hadTimerInterval {
                 self.hadTimerInterval = false
@@ -94,6 +95,7 @@ public class DeckWindowController: NSWindowController {
         
         // Short circuit when timer goes off.
         self.timerAlarmHandler = {
+            self.presentingCard?.grade(.null)
             self.shuffleCard()
             self.timeLeft = DeckWindowController.defaultTimerInterval
         }
@@ -224,7 +226,7 @@ public class ResponseViewController: NSViewController {
     public override func keyUp(with event: NSEvent) {
         guard event.keyCode >= 18 && event.keyCode <= 23 else { return }
         self.dismiss(self)
-        self.responseHandler?(Int(event.keyCode - 17))
+        self.responseHandler?(Int(event.keyCode - 18))
     }
     
     @IBAction func respond(_ sender: NSSegmentedControl!) {

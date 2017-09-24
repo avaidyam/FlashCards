@@ -990,9 +990,9 @@
                                 <segmentedCell key="cell" borderStyle="border" alignment="left" segmentDistribution="fill" style="texturedRounded" trackingMode="momentary" id="jAX-Mt-ZFn">
                                     <font key="font" metaFont="system"/>
                                     <segments>
-                                        <segment label="It was difficult."/>
-                                        <segment label="A little hesitation" tag="1"/>
-                                        <segment label="Perfect!"/>
+                                        <segment label="It was difficult." tag="3"/>
+                                        <segment label="A little hesitation" tag="4"/>
+                                        <segment label="Perfect!" tag="5"/>
                                     </segments>
                                 </segmentedCell>
                                 <connections>
@@ -1006,7 +1006,7 @@
                                     <segments>
                                         <segment label="Complete Blackout!"/>
                                         <segment label="I knew the right answer." tag="1"/>
-                                        <segment label="Almost got it..."/>
+                                        <segment label="Almost got it..." tag="2"/>
                                     </segments>
                                 </segmentedCell>
                                 <connections>
