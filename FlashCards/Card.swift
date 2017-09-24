@@ -1,6 +1,6 @@
 import Cocoa
 
-public class Card: Equatable, Hashable {
+public struct Card: Hashable, Comparable, Equatable {
     
     public enum Grade: Int, CustomStringConvertible {
         case null, bad, fail, pass, good, bright
@@ -72,13 +72,8 @@ public class Card: Equatable, Hashable {
 
 public extension Card {
     
-    /// Grade Flash card
-    ///
-    /// - Parameters:
-    ///   - flashcard: Flashcard
-    ///   - grade: Grade(0-5)
-    ///   - currentDatetime: TimeInterval
-    public func grade(_ grade: Grade, currentDatetime: TimeInterval) {
+    public mutating func grade(_ grade: Grade) {
+        let currentDatetime = Date().timeIntervalSince1970
         let cardGrade = grade.rawValue
         if cardGrade < 3 {
             self.repetition = 0
@@ -121,6 +116,10 @@ public extension Card {
 public extension Card {
     public var hashValue: Int {
         return self.frontURL.hashValue &+ self.backURL.hashValue
+    }
+    
+    public static func <(lhs: Card, rhs: Card) -> Bool {
+        return lhs.nextDate < rhs.nextDate
     }
     
     public static func ==(lhs: Card, rhs: Card) -> Bool {
