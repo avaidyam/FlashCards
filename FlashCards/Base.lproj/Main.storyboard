@@ -710,25 +710,27 @@
                                     </button>
                                 </toolbarItem>
                                 <toolbarItem implicitItemIdentifier="NSToolbarFlexibleSpaceItem" id="525-tQ-orD"/>
-                                <toolbarItem implicitItemIdentifier="48F92EEF-B4B4-4F00-B3E9-C71A934BFF14" label="Custom View" paletteLabel="Custom View" id="egB-F1-BfI">
+                                <toolbarItem implicitItemIdentifier="678F9A19-77B4-444E-A098-93869E126F54" label="Custom View" paletteLabel="Custom View" id="H41-wO-cnh">
                                     <nil key="toolTip"/>
-                                    <size key="minSize" width="38" height="17"/>
-                                    <size key="maxSize" width="45" height="17"/>
-                                    <textField key="view" horizontalHuggingPriority="251" verticalHuggingPriority="750" textCompletion="NO" id="Bvj-Gw-VCJ">
-                                        <rect key="frame" x="16" y="14" width="45" height="17"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" refusesFirstResponder="YES" allowsUndo="NO" sendsActionOnEndEditing="YES" alignment="center" title="00:00" usesSingleLineMode="YES" id="EmS-W3-Ita">
+                                    <size key="minSize" width="64" height="22"/>
+                                    <size key="maxSize" width="82" height="32"/>
+                                    <button key="view" verticalHuggingPriority="750" id="WIP-UA-UHd">
+                                        <rect key="frame" x="3" y="14" width="71" height="22"/>
+                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
+                                        <buttonCell key="cell" type="bevel" title="TIMER OFF" bezelStyle="rounded" alignment="right" imageScaling="proportionallyDown" inset="2" id="KCw-4R-2R7">
+                                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
                                             <font key="font" metaFont="system"/>
-                                            <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                                        </textFieldCell>
-                                    </textField>
+                                        </buttonCell>
+                                        <connections>
+                                            <action selector="timer:" target="B8D-0N-5wS" id="byA-xN-llr"/>
+                                        </connections>
+                                    </button>
                                 </toolbarItem>
                             </allowedToolbarItems>
                             <defaultToolbarItems>
                                 <toolbarItem reference="OU2-Im-iir"/>
                                 <toolbarItem reference="525-tQ-orD"/>
-                                <toolbarItem reference="egB-F1-BfI"/>
+                                <toolbarItem reference="H41-wO-cnh"/>
                             </defaultToolbarItems>
                         </toolbar>
                         <connections>
@@ -736,6 +738,7 @@
                         </connections>
                     </window>
                     <connections>
+                        <outlet property="timer" destination="WIP-UA-UHd" id="2QC-am-6JK"/>
                         <segue destination="iVg-HV-R2J" kind="relationship" relationship="window.shadowedContentViewController" id="K8Y-mP-7Zs"/>
                     </connections>
                 </windowController>

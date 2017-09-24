@@ -38,6 +38,8 @@ public class DeckWindowController: NSWindowController {
         }
     }
     
+    @IBOutlet var timer: NSButton!
+    
     private var faceViewController: FaceViewController? {
         return self.contentViewController as? FaceViewController
     }
@@ -56,13 +58,6 @@ public class DeckWindowController: NSWindowController {
     
     public override func windowDidLoad() {
         self.window?.titleVisibility = .hidden
-        self.faceViewController?.pressHandler = {
-            if self.faceFront {
-                self.faceFront = !self.faceFront
-            } else {
-                self.contentViewController?.presentViewControllerAsSheet(self.responseController!)
-            }
-        }
         
         // Randomize the next card.
         self.responseController?.responseHandler = { _ in
@@ -72,6 +67,53 @@ public class DeckWindowController: NSWindowController {
                 card = deck.cards.random()
             }
             self.presentingCard = card
+        }
+        
+        self.faceViewController?.pressHandler = {
+            if self.faceFront {
+                self.faceFront = !self.faceFront
+            } else {
+                self.contentViewController?.presentViewControllerAsSheet(self.responseController!)
+            }
+        }
+        
+        // Short circuit when timer goes off.
+        self.timerAlarmHandler = {
+            self.faceFront = false
+            self.contentViewController?.presentViewControllerAsSheet(self.responseController!)
+        }
+    }
+    
+    private var timerAlarmHandler: (() -> ())? = nil
+    
+    // Handles timesync with the UI button and <= 0 values.
+    private var timeLeft: TimeInterval? = nil {
+        didSet {
+            if self.timeLeft != nil && self.timeLeft! <= 0.0 {
+                self.timeLeft = nil
+                self.timerAlarmHandler?()
+            }
+            if self.timeLeft == nil {
+                self.timer.title = "TIMER OFF"
+            } else {
+                self.timer.title = "\(Int(self.timeLeft!))"
+            }
+        }
+    }
+    
+    // Handles recursing each second.
+    private func updateTimer() {
+        guard self.timeLeft != nil else { return }
+        self.timeLeft! -= 1.0
+        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1), execute: self.updateTimer)
+    }
+    
+    @IBAction func timer(_ sender: NSButton!) {
+        if self.timeLeft == nil {
+            self.timeLeft = 60.0
+            self.updateTimer()
+        } else {
+            self.timeLeft = nil
         }
     }
     
