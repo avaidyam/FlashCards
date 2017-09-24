@@ -11,8 +11,8 @@
 		4828FBAF1F5F076500918A79 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4828FBAE1F5F076500918A79 /* Assets.xcassets */; };
 		4828FBB21F5F076500918A79 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4828FBB01F5F076500918A79 /* Main.storyboard */; };
 		48466CC81F6FF21C008AD85A /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48466CC71F6FF21C008AD85A /* Extensions.swift */; };
-		48466CCA1F6FF23C008AD85A /* Structures.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48466CC91F6FF23C008AD85A /* Structures.swift */; };
-		48466CCC1F6FF46E008AD85A /* GradingEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48466CCB1F6FF46E008AD85A /* GradingEngine.swift */; };
+		48466CCA1F6FF23C008AD85A /* Deck.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48466CC91F6FF23C008AD85A /* Deck.swift */; };
+		48466CCC1F6FF46E008AD85A /* Flashcard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48466CCB1F6FF46E008AD85A /* Flashcard.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -23,8 +23,8 @@
 		4828FBB31F5F076500918A79 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		4828FBB41F5F076500918A79 /* FlashCards.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = FlashCards.entitlements; sourceTree = "<group>"; };
 		48466CC71F6FF21C008AD85A /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
-		48466CC91F6FF23C008AD85A /* Structures.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Structures.swift; sourceTree = "<group>"; };
-		48466CCB1F6FF46E008AD85A /* GradingEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradingEngine.swift; sourceTree = "<group>"; };
+		48466CC91F6FF23C008AD85A /* Deck.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Deck.swift; sourceTree = "<group>"; };
+		48466CCB1F6FF46E008AD85A /* Flashcard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Flashcard.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -57,16 +57,24 @@
 		4828FBA91F5F076500918A79 /* FlashCards */ = {
 			isa = PBXGroup;
 			children = (
-				4828FBAA1F5F076500918A79 /* Interface.swift */,
-				48466CC91F6FF23C008AD85A /* Structures.swift */,
+				48466CC91F6FF23C008AD85A /* Deck.swift */,
+				48466CCB1F6FF46E008AD85A /* Flashcard.swift */,
 				48466CC71F6FF21C008AD85A /* Extensions.swift */,
-				48466CCB1F6FF46E008AD85A /* GradingEngine.swift */,
-				4828FBAE1F5F076500918A79 /* Assets.xcassets */,
+				4828FBAA1F5F076500918A79 /* Interface.swift */,
 				4828FBB01F5F076500918A79 /* Main.storyboard */,
+				48DDBEC11F782796002181A1 /* Other */,
+			);
+			path = FlashCards;
+			sourceTree = "<group>";
+		};
+		48DDBEC11F782796002181A1 /* Other */ = {
+			isa = PBXGroup;
+			children = (
+				4828FBAE1F5F076500918A79 /* Assets.xcassets */,
 				4828FBB31F5F076500918A79 /* Info.plist */,
 				4828FBB41F5F076500918A79 /* FlashCards.entitlements */,
 			);
-			path = FlashCards;
+			name = Other;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -145,8 +153,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				4828FBAB1F5F076500918A79 /* Interface.swift in Sources */,
-				48466CCC1F6FF46E008AD85A /* GradingEngine.swift in Sources */,
-				48466CCA1F6FF23C008AD85A /* Structures.swift in Sources */,
+				48466CCC1F6FF46E008AD85A /* Flashcard.swift in Sources */,
+				48466CCA1F6FF23C008AD85A /* Deck.swift in Sources */,
 				48466CC81F6FF21C008AD85A /* Extensions.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

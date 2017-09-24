@@ -1,51 +1,6 @@
 import Cocoa
 
-public struct Card: Equatable {
-    
-    /// The front face of the card. Can be an image or a string.
-    public var front: Any? {
-        if self.frontURL.pathExtension == "png" || self.frontURL.pathExtension == "jpg" {
-            return NSImage(byReferencing: self.frontURL)
-        } else if self.frontURL.pathExtension == "rtf" || self.frontURL.pathExtension == "txt" {
-            return try? NSAttributedString(url: self.frontURL, options: [:], documentAttributes: nil)
-        }
-        return nil
-    }
-    
-    /// The back face of the card. Can be an image or a string.
-    public var back: Any? {
-        if self.backURL.pathExtension == "png" || self.backURL.pathExtension == "jpg" {
-            return NSImage(byReferencing: self.backURL)
-        } else if self.backURL.pathExtension == "rtf" || self.backURL.pathExtension == "txt" {
-            return try? NSAttributedString(url: self.backURL, options: [:], documentAttributes: nil)
-        }
-        return nil
-    }
-    
-    public let frontURL: URL
-    public let backURL: URL
-    
-    /// Match a front face to a back face for a card.
-    fileprivate init(front frontURL: URL) throws {
-        self.frontURL = frontURL
-        
-        // Automatically interpolate from the front URL the back URL if possible.
-        // Note: this assumes the naming is *.front.* and *.back.* for the card face URLs.
-        let pc = self.frontURL.lastPathComponent.replacingOccurrences(of: ".front.", with: ".back.")
-        let back = self.frontURL.deletingLastPathComponent().appendingPathComponent(pc)
-        if !(try back.checkResourceIsReachable()) {
-            throw CocoaError(.fileNoSuchFile)
-        }
-        
-        self.backURL = back
-    }
-    
-    public static func ==(lhs: Card, rhs: Card) -> Bool {
-        return (lhs.frontURL == rhs.frontURL && lhs.backURL == rhs.backURL)
-    }
-}
-
-public class DeckDocument: NSDocument {
+public class Deck: NSDocument {
     
     /// The internal Deck itself.
     private var deck: URL? = nil

@@ -19,7 +19,7 @@ public class DeckWindowController: NSWindowController {
     /// Sets the currently presented deck. Note: setting this resets the presented card.
     public override var document: AnyObject? {
         didSet {
-            guard let deck = self.document as? DeckDocument else { return }
+            guard let deck = self.document as? Deck else { return }
             self.presentingCard = deck.cards.random()
         }
     }
@@ -66,7 +66,7 @@ public class DeckWindowController: NSWindowController {
         
         // Randomize the next card.
         self.responseController?.responseHandler = { _ in
-            guard let deck = self.document as? DeckDocument else { return }
+            guard let deck = self.document as? Deck else { return }
             var card = deck.cards.random()
             while self.presentingCard != nil && self.presentingCard == card {
                 card = deck.cards.random()
@@ -76,8 +76,8 @@ public class DeckWindowController: NSWindowController {
     }
     
     @IBAction func edit(_ sender: NSButton!) {
-        guard let deck = self.document as? DeckDocument else { return }
-        self.listController?.representedObject = deck.cards
+        guard let deck = self.document as? Deck else { return }
+        self.listController?.representedObject = deck
         self.contentViewController?.presentViewControllerAsSheet(self.listController!)
     }
     
@@ -184,7 +184,7 @@ public class DeckListController: NSViewController, NSTableViewDelegate, NSTableV
     }
     
     private var cards: [Card] {
-        return self.representedObject as? [Card] ?? []
+        return (self.representedObject as? Deck)?.cards ?? []
     }
     
     public func numberOfRows(in tableView: NSTableView) -> Int {
