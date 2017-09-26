@@ -766,6 +766,9 @@
                         </menuItem>
                         <menuItem title="Image Card" indentationLevel="1" id="aut-ce-pEL">
                             <modifierMask key="keyEquivalentModifierMask"/>
+                            <connections>
+                                <action selector="addImageCard:" target="02c-yu-gN4" id="ggb-x0-rE0"/>
+                            </connections>
                         </menuItem>
                         <menuItem title="Screenshot Card" indentationLevel="1" id="Hem-Cf-091">
                             <modifierMask key="keyEquivalentModifierMask"/>
@@ -1049,7 +1052,7 @@ Gw
                 </viewController>
                 <customObject id="gAe-4Z-YwS" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-440" y="657"/>
+            <point key="canvasLocation" x="-424" y="674"/>
         </scene>
         <!--Face View Controller-->
         <scene sceneID="7pR-wb-wVm">
@@ -1138,7 +1141,7 @@ Gw
                 </viewController>
                 <customObject id="F6c-XO-SUa" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="100" y="910.5"/>
+            <point key="canvasLocation" x="100" y="705"/>
         </scene>
         <!--Edit Text Controller-->
         <scene sceneID="JRa-Ii-Wqv">
@@ -1202,11 +1205,20 @@ Gw
                                     <action selector="dismissController:" target="Hjb-oh-C4W" id="C16-vd-xdV"/>
                                 </connections>
                             </button>
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="xly-XR-Lxj">
+                                <rect key="frame" x="6" y="12" width="197" height="14"/>
+                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Enter your text into the boxes above." id="7m5-uF-UVN">
+                                    <font key="font" metaFont="smallSystem"/>
+                                    <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
                         </subviews>
                         <constraints>
                             <constraint firstItem="Fko-vf-O90" firstAttribute="leading" secondItem="bZJ-Pp-Vyp" secondAttribute="leading" constant="8" id="340-L0-1TA"/>
                             <constraint firstItem="wbF-xj-hzH" firstAttribute="leading" secondItem="Fko-vf-O90" secondAttribute="leading" id="3dE-lj-smP"/>
                             <constraint firstItem="wbF-xj-hzH" firstAttribute="trailing" secondItem="oxX-ut-HJR" secondAttribute="trailing" id="6De-gU-JJc"/>
+                            <constraint firstItem="xly-XR-Lxj" firstAttribute="leading" secondItem="bZJ-Pp-Vyp" secondAttribute="leading" constant="8" id="8EO-xu-O0u"/>
                             <constraint firstItem="wbF-xj-hzH" firstAttribute="top" secondItem="oxX-ut-HJR" secondAttribute="bottom" constant="10" id="BL3-Z6-3GN"/>
                             <constraint firstItem="khW-k6-gGh" firstAttribute="leading" secondItem="1ds-8m-pdr" secondAttribute="trailing" constant="8" id="G2F-y6-hKN"/>
                             <constraint firstItem="khW-k6-gGh" firstAttribute="top" secondItem="oxX-ut-HJR" secondAttribute="bottom" constant="20" id="JpN-Pm-jF3"/>
@@ -1217,6 +1229,8 @@ Gw
                             <constraint firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="1ds-8m-pdr" secondAttribute="bottom" id="cCd-q5-jYS"/>
                             <constraint firstItem="khW-k6-gGh" firstAttribute="top" secondItem="1ds-8m-pdr" secondAttribute="top" id="ccr-ls-9wn"/>
                             <constraint firstItem="khW-k6-gGh" firstAttribute="trailing" secondItem="oxX-ut-HJR" secondAttribute="trailing" id="jRC-Uc-xli"/>
+                            <constraint firstItem="xly-XR-Lxj" firstAttribute="baseline" secondItem="Hrb-Mf-d44" secondAttribute="baseline" id="lLS-5y-QJj"/>
+                            <constraint firstItem="Hrb-Mf-d44" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="xly-XR-Lxj" secondAttribute="trailing" constant="8" id="mPZ-n0-B8O"/>
                             <constraint firstItem="Fko-vf-O90" firstAttribute="leading" secondItem="1ds-8m-pdr" secondAttribute="leading" id="s9u-rF-gLf"/>
                             <constraint firstAttribute="trailing" secondItem="Hrb-Mf-d44" secondAttribute="trailing" constant="8" id="soy-NU-klR"/>
                             <constraint firstItem="oxX-ut-HJR" firstAttribute="top" secondItem="Fko-vf-O90" secondAttribute="top" id="tK5-aO-d3I"/>
@@ -1233,7 +1247,107 @@ Gw
                 </viewController>
                 <customObject id="HZc-TT-fvW" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="537" y="669"/>
+            <point key="canvasLocation" x="522" y="676"/>
+        </scene>
+        <!--Edit Image Controller-->
+        <scene sceneID="fCA-TL-RqZ">
+            <objects>
+                <viewController storyboardIdentifier="EditImageController" id="vxp-P7-Qme" customClass="EditImageController" customModule="FlashCards" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" wantsLayer="YES" id="Bpg-1T-tAg">
+                        <rect key="frame" x="0.0" y="0.0" width="348" height="229"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <subviews>
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="3Lv-un-n0r">
+                                <rect key="frame" x="6" y="204" width="162" height="17"/>
+                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Front" id="Mx4-jU-7fS">
+                                    <font key="font" metaFont="system"/>
+                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="LmN-s5-Q0E">
+                                <rect key="frame" x="181" y="204" width="161" height="17"/>
+                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Back" id="Per-ad-SyL">
+                                    <font key="font" metaFont="system"/>
+                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
+                            <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="nAW-8W-yGY">
+                                <rect key="frame" x="278" y="6" width="62" height="25"/>
+                                <buttonCell key="cell" type="roundTextured" title="SAVE" bezelStyle="texturedRounded" image="NSMenuOnStateTemplate" imagePosition="left" alignment="center" lineBreakMode="truncatingTail" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="tVK-gI-d4C">
+                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                    <font key="font" metaFont="smallSystemBold"/>
+                                    <string key="keyEquivalent" base64-UTF8="YES">
+Gw
+</string>
+                                </buttonCell>
+                                <connections>
+                                    <action selector="dismissController:" target="vxp-P7-Qme" id="jSa-HY-QCf"/>
+                                </connections>
+                            </button>
+                            <box horizontalHuggingPriority="750" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="LJt-o2-fgi">
+                                <rect key="frame" x="172" y="38" width="5" height="158"/>
+                            </box>
+                            <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="f1f-yD-g5Q">
+                                <rect key="frame" x="5" y="35" width="164" height="164"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" secondItem="f1f-yD-g5Q" secondAttribute="height" multiplier="1:1" id="hbP-0v-vlD"/>
+                                </constraints>
+                                <imageCell key="cell" selectable="YES" editable="YES" alignment="left" animates="YES" imageScaling="proportionallyUpOrDown" imageFrameStyle="grayBezel" id="r4X-uw-fTS"/>
+                            </imageView>
+                            <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="2bk-cL-1Wb">
+                                <rect key="frame" x="180" y="35" width="163" height="164"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" secondItem="2bk-cL-1Wb" secondAttribute="height" multiplier="1:1" id="Rwt-RS-2YA"/>
+                                </constraints>
+                                <imageCell key="cell" selectable="YES" editable="YES" alignment="left" animates="YES" imageScaling="proportionallyUpOrDown" imageFrameStyle="grayBezel" id="FiR-I8-sGU"/>
+                            </imageView>
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="aMj-Uu-axx">
+                                <rect key="frame" x="6" y="12" width="231" height="14"/>
+                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Drag and drop images into the wells above." id="UIl-JX-Yrx">
+                                    <font key="font" metaFont="smallSystem"/>
+                                    <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
+                        </subviews>
+                        <constraints>
+                            <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="3Lv-un-n0r" secondAttribute="trailing" constant="20" symbolic="YES" id="4z7-gJ-CE5"/>
+                            <constraint firstItem="2bk-cL-1Wb" firstAttribute="trailing" secondItem="nAW-8W-yGY" secondAttribute="trailing" id="6af-Yn-Ffo"/>
+                            <constraint firstItem="aMj-Uu-axx" firstAttribute="baseline" secondItem="nAW-8W-yGY" secondAttribute="baseline" id="6ed-sc-Uya"/>
+                            <constraint firstItem="2bk-cL-1Wb" firstAttribute="bottom" secondItem="f1f-yD-g5Q" secondAttribute="bottom" id="95e-eK-1on"/>
+                            <constraint firstItem="2bk-cL-1Wb" firstAttribute="top" secondItem="f1f-yD-g5Q" secondAttribute="top" id="C07-Pf-6Ef"/>
+                            <constraint firstItem="aMj-Uu-axx" firstAttribute="leading" secondItem="Bpg-1T-tAg" secondAttribute="leading" constant="8" id="Fhi-tH-hCi"/>
+                            <constraint firstItem="2bk-cL-1Wb" firstAttribute="trailing" secondItem="LmN-s5-Q0E" secondAttribute="trailing" id="GIt-iT-Cte"/>
+                            <constraint firstItem="nAW-8W-yGY" firstAttribute="top" secondItem="2bk-cL-1Wb" secondAttribute="bottom" constant="8" id="Ja9-Nh-jOw"/>
+                            <constraint firstItem="3Lv-un-n0r" firstAttribute="leading" secondItem="Bpg-1T-tAg" secondAttribute="leading" constant="8" id="P50-w5-rh9"/>
+                            <constraint firstItem="nAW-8W-yGY" firstAttribute="top" secondItem="LJt-o2-fgi" secondAttribute="bottom" constant="8" id="R6Q-AI-FjN"/>
+                            <constraint firstItem="nAW-8W-yGY" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="aMj-Uu-axx" secondAttribute="trailing" constant="8" id="UiF-FV-491"/>
+                            <constraint firstItem="f1f-yD-g5Q" firstAttribute="top" secondItem="3Lv-un-n0r" secondAttribute="bottom" constant="8" id="VvG-3C-riX"/>
+                            <constraint firstItem="3Lv-un-n0r" firstAttribute="top" secondItem="Bpg-1T-tAg" secondAttribute="top" constant="8" id="VyS-35-jUm"/>
+                            <constraint firstItem="3Lv-un-n0r" firstAttribute="trailing" secondItem="f1f-yD-g5Q" secondAttribute="trailing" id="Z8z-hE-Kky"/>
+                            <constraint firstItem="LmN-s5-Q0E" firstAttribute="top" secondItem="Bpg-1T-tAg" secondAttribute="top" constant="8" id="f2C-6Z-Y9o"/>
+                            <constraint firstItem="2bk-cL-1Wb" firstAttribute="width" secondItem="f1f-yD-g5Q" secondAttribute="width" id="gHE-T5-Rpf"/>
+                            <constraint firstItem="nAW-8W-yGY" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="Bpg-1T-tAg" secondAttribute="leading" id="izZ-f7-0Lg"/>
+                            <constraint firstItem="f1f-yD-g5Q" firstAttribute="leading" secondItem="Bpg-1T-tAg" secondAttribute="leading" constant="8" id="ksJ-hU-alW"/>
+                            <constraint firstAttribute="bottom" secondItem="nAW-8W-yGY" secondAttribute="bottom" constant="8" id="lXu-NG-eqW"/>
+                            <constraint firstItem="LmN-s5-Q0E" firstAttribute="leading" secondItem="LJt-o2-fgi" secondAttribute="trailing" constant="8" id="oc0-5I-7Zx"/>
+                            <constraint firstItem="2bk-cL-1Wb" firstAttribute="leading" secondItem="LJt-o2-fgi" secondAttribute="trailing" constant="8" id="ogx-Hn-ti8"/>
+                            <constraint firstItem="LJt-o2-fgi" firstAttribute="leading" secondItem="f1f-yD-g5Q" secondAttribute="trailing" constant="8" id="ouf-tm-pNj"/>
+                            <constraint firstItem="nAW-8W-yGY" firstAttribute="top" secondItem="f1f-yD-g5Q" secondAttribute="bottom" constant="8" id="rTG-eg-oH1"/>
+                            <constraint firstItem="LJt-o2-fgi" firstAttribute="top" secondItem="LmN-s5-Q0E" secondAttribute="bottom" constant="8" id="rjt-cT-Bue"/>
+                            <constraint firstAttribute="trailing" secondItem="nAW-8W-yGY" secondAttribute="trailing" constant="8" id="vLZ-rr-vWb"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="backImageView" destination="2bk-cL-1Wb" id="UCU-fu-nYm"/>
+                        <outlet property="frontImageView" destination="f1f-yD-g5Q" id="oz6-uo-KeB"/>
+                    </connections>
+                </viewController>
+                <customObject id="PHZ-Th-d5O" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="519" y="889"/>
         </scene>
     </scenes>
     <resources>

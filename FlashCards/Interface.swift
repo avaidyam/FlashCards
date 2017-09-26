@@ -325,11 +325,35 @@ public class DeckListController: NSViewController, NSTableViewDelegate, NSTableV
     }
     
     public override func dismissViewController(_ viewController: NSViewController) {
-        guard let deck = self.representedObject as? Deck, let vc = viewController as? EditTextController else {
+        guard let deck = self.representedObject as? Deck else {
             super.dismissViewController(viewController); return
         }
         
-        deck.cards.append(Card(front: vc.frontTextField.stringValue, back: vc.backTextField.stringValue))
+        if let vc = viewController as? EditTextController {
+            guard vc.frontTextField.stringValue != "" || vc.backTextField.stringValue != "" else {
+                self.presentError(CocoaError(.userCancelled)); return
+            }
+            deck.cards.append(Card(front: vc.frontTextField.stringValue, back: vc.backTextField.stringValue))
+            
+        } else if let vc = viewController as? EditImageController {
+            guard vc.frontImageView.image != nil || vc.backImageView.image != nil else {
+                self.presentError(CocoaError(.userCancelled)); return
+            }
+            
+            // Generate the correct unique file locations.
+            guard let base = deck.fileURL?.appendingPathComponent("Contents") else { return }
+            let frontURL = URL(fileURLWithPath: "\(UUID().uuidString).png", relativeTo: base)
+            let backURL = URL(fileURLWithPath: "\(UUID().uuidString).png", relativeTo: base)
+            
+            do {
+                try vc.frontImageView.image?.write(to: frontURL, type: .png)
+                try vc.backImageView.image?.write(to: backURL, type: .png)
+            } catch(let error) {
+                self.presentError(error)
+            }
+            
+            deck.cards.append(Card(front: frontURL.absoluteString, back: backURL.absoluteString))
+        }
         self.tableView.reloadData()
         super.dismissViewController(viewController)
     }
@@ -338,6 +362,13 @@ public class DeckListController: NSViewController, NSTableViewDelegate, NSTableV
     @IBAction func addCard(_ sender: NSMenuItem!) {
         let storyboard = NSStoryboard(name: NSStoryboard.Name("Main"), bundle: nil)
         let vc = storyboard.instantiateController(withIdentifier: NSStoryboard.SceneIdentifier("EditTextController")) as! EditTextController
+        self.presentViewControllerAsSheet(vc)
+    }
+    
+    /// Add a new card with text contents.
+    @IBAction func addImageCard(_ sender: NSMenuItem!) {
+        let storyboard = NSStoryboard(name: NSStoryboard.Name("Main"), bundle: nil)
+        let vc = storyboard.instantiateController(withIdentifier: NSStoryboard.SceneIdentifier("EditImageController")) as! EditImageController
         self.presentViewControllerAsSheet(vc)
     }
     
@@ -390,3 +421,7 @@ public class EditTextController: NSViewController {
     @IBOutlet var backTextField: NSTextField!
 }
 
+public class EditImageController: NSViewController {
+    @IBOutlet var frontImageView: NSImageView!
+    @IBOutlet var backImageView: NSImageView!
+}
