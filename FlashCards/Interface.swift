@@ -224,11 +224,18 @@ public class FaceViewController: NSViewController {
                     self.textView.string = ""
                     self.textLabel.stringValue = self.noneString
                 }
-                
-                /// Adjust the none string's color to be quieter.
-                self.textLabel.textColor = self.representedObject == nil ? .tertiaryLabelColor : .labelColor
+                self.view.needsLayout = true
             }
         }
+    }
+    
+    public override func viewDidLayout() {
+        super.viewDidLayout()
+        
+        /// Adjust the none string's color to be quieter.
+        self.textLabel.textColor = self.representedObject == nil ? .tertiaryLabelColor : .labelColor
+        let bound = min(self.view.bounds.size.width, self.view.bounds.size.height)
+        self.textLabel.font = NSFont.systemFont(ofSize: bound * 0.2)
     }
 }
 
@@ -257,7 +264,6 @@ public class ResponseViewController: NSViewController {
 public class DeckListController: NSViewController, NSTableViewDelegate, NSTableViewDataSource {
     
     @IBOutlet var tableView: NSTableView!
-    @IBOutlet var preview: ReferencingView!
     
     public override func viewWillAppear() {
         self.tableView.enclosingScrollView?.scrollerStyle = .overlay // FIXME in IB
@@ -304,10 +310,10 @@ public class DeckListController: NSViewController, NSTableViewDelegate, NSTableV
         }
     }
     
-    @IBAction func imageClick(_ sender: NSImageView!) {
+    /// Display the edit panel for the card's type.
+    @IBAction func editCard(_ sender: NSButton!) {
         guard self.tableView.selectedRowIndexes.count == 1 else { return }
-        //deck.cards[self.tableView.selectedRow]
-        print("click!", sender)
+        print("edit!", sender)
     }
     
     @IBAction func removeCard(_ sender: NSButton!) {
@@ -318,12 +324,21 @@ public class DeckListController: NSViewController, NSTableViewDelegate, NSTableV
         self.tableView.reloadData()
     }
     
+    public override func dismissViewController(_ viewController: NSViewController) {
+        guard let deck = self.representedObject as? Deck, let vc = viewController as? EditTextController else {
+            super.dismissViewController(viewController); return
+        }
+        
+        deck.cards.append(Card(front: vc.frontTextField.stringValue, back: vc.backTextField.stringValue))
+        self.tableView.reloadData()
+        super.dismissViewController(viewController)
+    }
     
     /// Add a new card with text contents.
     @IBAction func addCard(_ sender: NSMenuItem!) {
-        guard let deck = self.representedObject as? Deck else { return }
-        deck.cards.append(Card(front: "Front", back: "Back"))
-        self.tableView.reloadData()
+        let storyboard = NSStoryboard(name: NSStoryboard.Name("Main"), bundle: nil)
+        let vc = storyboard.instantiateController(withIdentifier: NSStoryboard.SceneIdentifier("EditTextController")) as! EditTextController
+        self.presentViewControllerAsSheet(vc)
     }
     
     /// Add a new card by taking a screenshot and marking it up.
@@ -368,5 +383,10 @@ public class DeckListController: NSViewController, NSTableViewDelegate, NSTableV
             }
         }
     }
+}
+
+public class EditTextController: NSViewController {
+    @IBOutlet var frontTextField: NSTextField!
+    @IBOutlet var backTextField: NSTextField!
 }
 
