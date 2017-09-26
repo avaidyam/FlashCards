@@ -102,7 +102,9 @@ public class Deck: NSDocument {
         Swift.print("Writing package...")
         
         // Add Info.plist
-        self.uuid = UUID() // since we're overwriting the current doc
+        if op == .saveAsOperation || self.uuid == nil {
+            self.uuid = UUID() // since we're overwriting the current doc
+        }
         let info = try PropertyListEncoder().encode(DeckInfo(uuid: self.uuid!, cards: self.cards))
         Swift.print("Packing package...")
         
