@@ -87,11 +87,11 @@ public struct Card: Codable, Hashable, Comparable, Equatable {
     /// This card's globally unique (across decks) identifier.
     public let uuid: UUID
     
-    /// Can hold a string internally or a "file:///<filename>" reference to load as a URL.
+    /// Can hold a string internally or a "ref://<filename>" reference to load as a URL.
     /// This allows optimizing space usage and not creating many text files for cards.
     public let front: String
     
-    /// Can hold a string internally or a "file:///<filename>" reference to load as a URL.
+    /// Can hold a string internally or a "ref://<filename>" reference to load as a URL.
     /// This allows optimizing space usage and not creating many text files for cards.
     public let back: String
     
@@ -105,10 +105,12 @@ public struct Card: Codable, Hashable, Comparable, Equatable {
 public extension Card {
     
     /// The front face of the card. Can be an image or a string.
-    public var frontValue: Any? {
-        guard self.front.hasPrefix("file://"), let frontURL = URL(string: self.front) else {
+    /// Will auto-affix "/Contents/<filename>" to the given url.
+    public func frontValue(_ contentsURL: URL) -> Any? {
+        guard self.front.hasPrefix("ref://") else {
             return self.front
         }
+        let frontURL = contentsURL.appendingPathComponent("Contents").appendingPathComponent(self.front.replacingOccurrences(of: "ref://", with: ""))
         
         if frontURL.pathExtension == "png" || frontURL.pathExtension == "jpg" {
             return NSImage(byReferencing: frontURL)
@@ -120,11 +122,13 @@ public extension Card {
     }
     
     /// The back face of the card. Can be an image or a string.
-    public var backValue: Any? {
-        guard self.back.hasPrefix("file://"), let backURL = URL(string: self.back) else {
+    /// Will auto-affix "/Contents/<filename>" to the given url.
+    public func backValue(_ contentsURL: URL) -> Any? {
+        guard self.back.hasPrefix("ref://") else {
             return self.back
         }
-        
+        let backURL = contentsURL.appendingPathComponent("Contents").appendingPathComponent(self.back.replacingOccurrences(of: "ref://", with: ""))
+
         if backURL.pathExtension == "png" || backURL.pathExtension == "jpg" {
             return NSImage(byReferencing: backURL)
         } else if backURL.pathExtension == "rtf" || backURL.pathExtension == "txt" {

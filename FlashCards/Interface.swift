@@ -46,7 +46,10 @@ public class DeckWindowController: NSWindowController {
     /// The currently visible face of the presented card of the presented deck.
     private var faceFront: Bool = true {
         didSet {
-            self.faceViewController?.representedObject = self.faceFront ? self.presentingCard?.frontValue : self.presentingCard?.backValue
+            guard let deck = self.document as? Deck else { return }
+            self.faceViewController?.representedObject = self.faceFront ?
+                self.presentingCard?.frontValue(deck.fileURL!) :
+                self.presentingCard?.backValue(deck.fileURL!)
         }
     }
     
@@ -271,11 +274,12 @@ public class DeckListController: NSViewController, NSTableViewDelegate, NSTableV
         
         self.previewController?.noneString = "No Card Selected"
         self.previewController?.pressHandler = {
+            guard let deck = self.representedObject as? Deck else { return }
             guard self.tableView.selectedRow > 0 else { return }
             let card = self.cards[self.tableView.selectedRow]
             
             // can't flip back!
-            self.previewController?.representedObject = card.backValue
+            self.previewController?.representedObject = card.backValue(deck.fileURL!)
         }
     }
     
@@ -302,9 +306,10 @@ public class DeckListController: NSViewController, NSTableViewDelegate, NSTableV
     }
     
     public func tableViewSelectionDidChange(_ notification: Notification) {
+        guard let deck = self.representedObject as? Deck else { return }
         if self.tableView.selectedRowIndexes.count == 1 {
             let card = self.cards[self.tableView.selectedRow]
-            self.previewController?.representedObject = card.frontValue
+            self.previewController?.representedObject = card.frontValue(deck.fileURL!)
         } else {
             self.previewController?.representedObject = nil
         }
@@ -330,13 +335,13 @@ public class DeckListController: NSViewController, NSTableViewDelegate, NSTableV
         }
         
         if let vc = viewController as? EditTextController {
-            guard vc.frontTextField.stringValue != "" || vc.backTextField.stringValue != "" else {
+            guard vc.frontTextField.stringValue != "" && vc.backTextField.stringValue != "" else {
                 self.presentError(CocoaError(.userCancelled)); return
             }
             deck.cards.append(Card(front: vc.frontTextField.stringValue, back: vc.backTextField.stringValue))
             
         } else if let vc = viewController as? EditImageController {
-            guard vc.frontImageView.image != nil || vc.backImageView.image != nil else {
+            guard vc.frontImageView.image != nil && vc.backImageView.image != nil else {
                 self.presentError(CocoaError(.userCancelled)); return
             }
             
@@ -352,7 +357,7 @@ public class DeckListController: NSViewController, NSTableViewDelegate, NSTableV
                 self.presentError(error)
             }
             
-            deck.cards.append(Card(front: frontURL.absoluteString, back: backURL.absoluteString))
+            deck.cards.append(Card(front: "ref://" + frontURL.lastPathComponent, back: "ref://" + backURL.lastPathComponent))
         }
         self.tableView.reloadData()
         super.dismissViewController(viewController)
@@ -403,7 +408,7 @@ public class DeckListController: NSViewController, NSTableViewDelegate, NSTableV
                 
                 // Update with a new card.
                 DispatchQueue.main.async {
-                    deck.cards.append(Card(front: imageURL.absoluteString, back: markedURL.absoluteString))
+                    deck.cards.append(Card(front: "ref://" + imageURL.lastPathComponent, back: "ref://" + markedURL.lastPathComponent))
                     self.tableView.reloadData()
                 }
             } catch(let error) {
