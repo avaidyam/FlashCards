@@ -275,7 +275,7 @@ public class DeckListController: NSViewController, NSTableViewDelegate, NSTableV
         self.previewController?.noneString = "No Card Selected"
         self.previewController?.pressHandler = {
             guard let deck = self.representedObject as? Deck else { return }
-            guard self.tableView.selectedRow > 0 else { return }
+            guard self.tableView.selectedRow >= 0 else { return }
             let card = self.cards[self.tableView.selectedRow]
             
             // can't flip back!
@@ -324,6 +324,21 @@ public class DeckListController: NSViewController, NSTableViewDelegate, NSTableV
     @IBAction func removeCard(_ sender: NSButton!) {
         guard let deck = self.representedObject as? Deck else { return }
         self.tableView.selectedRowIndexes.reversed().forEach {
+            
+            // Delete the front card resource reference if it's present.
+            let fr = deck.cards[$0].front
+            if fr.hasPrefix("ref://") {
+                let url = deck.fileURL!.appendingPathComponent("Contents").appendingPathComponent(fr.replacingOccurrences(of: "ref://", with: ""))
+                try? FileManager.default.removeItem(at: url)
+            }
+            
+            // Delete the back card resource reference if it's present.
+            let bk = deck.cards[$0].back
+            if bk.hasPrefix("ref://") {
+                let url = deck.fileURL!.appendingPathComponent("Contents").appendingPathComponent(bk.replacingOccurrences(of: "ref://", with: ""))
+                try? FileManager.default.removeItem(at: url)
+            }
+            
             deck.cards.remove(at: $0)
         }
         self.tableView.reloadData()

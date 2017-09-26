@@ -15,8 +15,7 @@ public class Deck: NSDocument {
         }
     }
     
-    /// The internal Deck itself.
-    private var deck: URL? = nil
+    /// The internal globally unique Deck ID.
     private var uuid: UUID? = nil
     
     /// The cards contained in the deck (cached in-memory). Any modification to the cards
@@ -24,8 +23,8 @@ public class Deck: NSDocument {
     public var cards: [Card] = [] {
         didSet {
             guard !self.isReading else { return }
-            let info_ = try? PropertyListEncoder().encode(DeckInfo(uuid: self.uuid ?? UUID(), cards: self.cards))
-            let url_ = self.deck?.appendingPathComponent("Contents").appendingPathComponent("Info.plist")
+            let info_ = try? PropertyListEncoder().encode(DeckInfo(uuid: self.uuid!, cards: self.cards))
+            let url_ = self.fileURL?.appendingPathComponent("Contents").appendingPathComponent("Info.plist")
             
             guard let info = info_, let url = url_ else { return }
             do {
@@ -77,18 +76,19 @@ public class Deck: NSDocument {
     
     public override func read(from url: URL, ofType typeName: String) throws {
         Swift.print("Reading package...")
-        self.deck = url
         
         // Read the Info.plist information.
         let infoURL = url.appendingPathComponent("Contents").appendingPathComponent("Info.plist")
         do {
             let infoData = try Data(contentsOf: infoURL)
             let info = try PropertyListDecoder().decode(DeckInfo.self, from: infoData)
+            Swift.print("Unpacked package...")
             
             self.isReading = true
             self.uuid = info.uuid
             self.cards = info.cards
             self.isReading = false
+            Swift.print("Package read!")
         } catch(let error) {
             DispatchQueue.main.async {
                 self.presentError(error)
@@ -104,6 +104,7 @@ public class Deck: NSDocument {
         // Add Info.plist
         self.uuid = UUID() // since we're overwriting the current doc
         let info = try PropertyListEncoder().encode(DeckInfo(uuid: self.uuid!, cards: self.cards))
+        Swift.print("Packing package...")
         
         // Save the package wrapper.
         try FileWrapper(directoryWithFileWrappers: [
@@ -111,10 +112,6 @@ public class Deck: NSDocument {
                 "Info.plist": FileWrapper(regularFileWithContents: info)
             ])
         ]).write(to: url, options: [], originalContentsURL: nil)
-        
-        // If this is a first-time-save or a save-as, load the deck.
-        if self.deck == nil || op == .saveAsOperation {
-            self.deck = url
-        }
+        Swift.print("Package written!")
     }
 }
