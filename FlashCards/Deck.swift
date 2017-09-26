@@ -115,5 +115,13 @@ public class Deck: NSDocument {
             ])
         ]).write(to: url, options: [], originalContentsURL: nil)
         Swift.print("Package written!")
+        
+        // If we already exist and we're save-as/to'ing, then copy all ref'd files too.
+        guard self.fileURL != nil else { return }
+        let stuff = try FileManager.default.contentsOfDirectory(at: self.fileURL!.appendingPathComponent("Contents"),
+                                                                includingPropertiesForKeys: nil, options: .skipsHiddenFiles)
+        for file in stuff where file.lastPathComponent != "Info.plist" {
+            try FileManager.default.copyItem(at: file, to: url.appendingPathComponent("Contents").appendingPathComponent(file.lastPathComponent))
+        }
     }
 }
