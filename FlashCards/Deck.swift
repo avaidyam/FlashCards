@@ -4,19 +4,37 @@ import Cocoa
 /// any operations done to the deck are immediately flushed to disk (without undo).
 public class Deck: NSDocument {
     
+    /// Internal package Info.plist structure.
+    private struct DeckInfo: Codable {
+        var uuid: UUID
+        var cards: [Card]
+        
+        public init(uuid: UUID = UUID(), cards: [Card] = []) {
+            self.uuid = uuid
+            self.cards = cards
+        }
+    }
+    
     /// The internal Deck itself.
     private var deck: URL? = nil
+    private var uuid: UUID? = nil
     
     /// The cards contained in the deck (cached in-memory). Any modification to the cards
     /// flushes the memory cache to disk (the Info.plist file in the saved bundle).
     public var cards: [Card] = [] {
         didSet {
             guard !self.isReading else { return }
-            let info_ = try? PropertyListEncoder().encode(self.cards)
+            let info_ = try? PropertyListEncoder().encode(DeckInfo(uuid: self.uuid ?? UUID(), cards: self.cards))
             let url_ = self.deck?.appendingPathComponent("Contents").appendingPathComponent("Info.plist")
             
             guard let info = info_, let url = url_ else { return }
-            try? info.write(to: url)
+            do {
+                try info.write(to: url)
+            } catch(let error) {
+                DispatchQueue.main.async {
+                    self.presentError(error)
+                }
+            }
         }
     }
     
@@ -63,12 +81,19 @@ public class Deck: NSDocument {
         
         // Read the Info.plist information.
         let infoURL = url.appendingPathComponent("Contents").appendingPathComponent("Info.plist")
-        if let infoData = try? Data(contentsOf: infoURL), let info = try? PropertyListDecoder().decode([Card].self, from: infoData) {
+        do {
+            let infoData = try Data(contentsOf: infoURL)
+            let info = try PropertyListDecoder().decode(DeckInfo.self, from: infoData)
+            
             self.isReading = true
-            self.cards = info
+            self.uuid = info.uuid
+            self.cards = info.cards
             self.isReading = false
-        } else {
-            self.cards = [] // this package didn't have an Info.plist!
+        } catch(let error) {
+            DispatchQueue.main.async {
+                self.presentError(error)
+                self.cards = [] // this package didn't have an Info.plist!
+            }
         }
     }
     
@@ -77,7 +102,8 @@ public class Deck: NSDocument {
         Swift.print("Writing package...")
         
         // Add Info.plist
-        let info = try PropertyListEncoder().encode(self.cards)
+        self.uuid = UUID() // since we're overwriting the current doc
+        let info = try PropertyListEncoder().encode(DeckInfo(uuid: self.uuid!, cards: self.cards))
         
         // Save the package wrapper.
         try FileWrapper(directoryWithFileWrappers: [

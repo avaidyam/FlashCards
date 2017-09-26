@@ -154,6 +154,10 @@ public class FirstResponderView: NSView {
     }
 }
 
+public class ReferencingView: NSView {
+    @IBOutlet weak var viewController: NSViewController?
+}
+
 // Clickable NSImageView
 public class ClickableImageView: NSImageView {
     

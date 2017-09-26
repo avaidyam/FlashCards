@@ -60,56 +60,78 @@ public struct Card: Codable, Hashable, Comparable, Equatable {
         }
     }
     
+    /// Holds the card's study info for the user. Should not be stored with the card.
+    public struct Study: Codable {
+        public var easinessFactor = 2.5
+        public var repetition = 0
+        public var interval = 0
+        
+        public var previousDate: TimeInterval = 0 /* @init: never reviewed before */
+        public var nextDate = Date().timeIntervalSince1970
+        
+        public let uuid: UUID
+        public init(uuid: UUID) {
+            self.uuid = uuid
+        }
+    }
+    
     /// Default Easiness Factor = default 1.3
     public static var defaultEasinessFactor: Double = 1.3
     
-    public var easinessFactor = 2.5
-    public var repetition = 0
-    public var interval = 0
+    /// Should be stored and retrieved automatically from user defaults, NOT encoded plists.
+    public var study: Study {
+        get { return Study(uuid: self.uuid) }
+        set { /**/ }
+    }
     
-    public var previousDate: TimeInterval = 0 /* @init: never reviewed before */
-    public var nextDate = Date().timeIntervalSince1970
-    
+    /// This card's globally unique (across decks) identifier.
     public let uuid: UUID
-    public let frontURL: URL
-    public let backURL: URL
+    
+    /// Can hold a string internally or a "file:///<filename>" reference to load as a URL.
+    /// This allows optimizing space usage and not creating many text files for cards.
+    public let front: String
+    
+    /// Can hold a string internally or a "file:///<filename>" reference to load as a URL.
+    /// This allows optimizing space usage and not creating many text files for cards.
+    public let back: String
+    
+    public init(uuid: UUID = UUID(), front: String, back: String) {
+        self.uuid = uuid
+        self.front = front
+        self.back = back
+    }
+}
+
+public extension Card {
     
     /// The front face of the card. Can be an image or a string.
-    public var front: Any? {
-        if self.frontURL.pathExtension == "png" || self.frontURL.pathExtension == "jpg" {
-            return NSImage(byReferencing: self.frontURL)
-        } else if self.frontURL.pathExtension == "rtf" || self.frontURL.pathExtension == "txt" {
-            return try? NSAttributedString(url: self.frontURL, options: [:], documentAttributes: nil)
+    public var frontValue: Any? {
+        guard self.front.hasPrefix("file://"), let frontURL = URL(string: self.front) else {
+            return self.front
         }
+        
+        if frontURL.pathExtension == "png" || frontURL.pathExtension == "jpg" {
+            return NSImage(byReferencing: frontURL)
+        } else if frontURL.pathExtension == "rtf" {
+            return try? NSAttributedString(url: frontURL, options: [:], documentAttributes: nil)
+        }
+        
         return nil
     }
     
     /// The back face of the card. Can be an image or a string.
-    public var back: Any? {
-        if self.backURL.pathExtension == "png" || self.backURL.pathExtension == "jpg" {
-            return NSImage(byReferencing: self.backURL)
-        } else if self.backURL.pathExtension == "rtf" || self.backURL.pathExtension == "txt" {
-            return try? NSAttributedString(url: self.backURL, options: [:], documentAttributes: nil)
+    public var backValue: Any? {
+        guard self.back.hasPrefix("file://"), let backURL = URL(string: self.back) else {
+            return self.back
         }
+        
+        if backURL.pathExtension == "png" || backURL.pathExtension == "jpg" {
+            return NSImage(byReferencing: backURL)
+        } else if backURL.pathExtension == "rtf" || backURL.pathExtension == "txt" {
+            return try? NSAttributedString(url: backURL, options: [:], documentAttributes: nil)
+        }
+        
         return nil
-    }
-    
-    public init(id: UUID = UUID(), front frontURL: URL, back backURL: URL) {
-        self.uuid = id
-        self.frontURL = frontURL
-        self.backURL = backURL
-    }
-    
-    /// Match a front face to a back face for a card.
-    /// Automatically interpolate from the front URL the back URL if possible.
-    /// Note: this assumes the naming is *.front.* and *.back.* for the card face URLs.
-    internal init(front frontURL: URL) throws {
-        let pc = frontURL.lastPathComponent.replacingOccurrences(of: ".front.", with: ".back.")
-        let backURL = frontURL.deletingLastPathComponent().appendingPathComponent(pc)
-        if !(try backURL.checkResourceIsReachable()) {
-            throw CocoaError(.fileNoSuchFile)
-        }
-        self.init(front: frontURL, back: backURL)
     }
 }
 
@@ -118,50 +140,50 @@ public extension Card {
     public mutating func grade(_ grade: Grade) {
         let cardGrade = grade.rawValue
         if cardGrade < 3 {
-            self.repetition = 0
-            self.interval = 0
+            self.study.repetition = 0
+            self.study.interval = 0
         } else {
             let qualityFactor = Double(Grade.bright.rawValue - cardGrade)
-            let newEasinessFactor = self.easinessFactor + (0.1 - qualityFactor * (0.08 + qualityFactor * 0.02))
+            let newEasinessFactor = self.study.easinessFactor + (0.1 - qualityFactor * (0.08 + qualityFactor * 0.02))
             if newEasinessFactor < Card.defaultEasinessFactor {
-                self.easinessFactor = Card.defaultEasinessFactor
+                self.study.easinessFactor = Card.defaultEasinessFactor
             } else {
-                self.easinessFactor = newEasinessFactor
+                self.study.easinessFactor = newEasinessFactor
             }
-            self.repetition += 1
-            switch self.repetition {
+            self.study.repetition += 1
+            switch self.study.repetition {
             case 1:
-                self.interval = 1
+                self.study.interval = 1
                 break
             case 2:
-                self.interval = 6
+                self.study.interval = 6
                 break
             default:
-                let newInterval = ceil(Double(self.repetition - 1) * self.easinessFactor)
-                self.interval = Int(newInterval)
+                let newInterval = ceil(Double(self.study.repetition - 1) * self.study.easinessFactor)
+                self.study.interval = Int(newInterval)
             }
         }
         
         if cardGrade == 3 {
-            self.interval = 0
+            self.study.interval = 0
         }
         
-        let newNextDatetime = Date().timeIntervalSince1970 + Double(self.interval * (60 * 60 * 24))
-        self.previousDate = self.nextDate
-        self.nextDate = newNextDatetime
+        let newNextDatetime = Date().timeIntervalSince1970 + Double(self.study.interval * (60 * 60 * 24))
+        self.study.previousDate = self.study.nextDate
+        self.study.nextDate = newNextDatetime
     }
 }
 
 public extension Card {
     public var hashValue: Int {
-        return self.frontURL.hashValue &+ self.backURL.hashValue
+        return self.front.hashValue &+ self.back.hashValue
     }
     
     public static func <(lhs: Card, rhs: Card) -> Bool {
-        return lhs.nextDate < rhs.nextDate
+        return lhs.study.nextDate < rhs.study.nextDate
     }
     
     public static func ==(lhs: Card, rhs: Card) -> Bool {
-        return (lhs.frontURL == rhs.frontURL && lhs.backURL == rhs.backURL)
+        return (lhs.front == rhs.front && lhs.back == rhs.back)
     }
 }

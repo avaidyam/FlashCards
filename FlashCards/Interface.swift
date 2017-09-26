@@ -46,7 +46,7 @@ public class DeckWindowController: NSWindowController {
     /// The currently visible face of the presented card of the presented deck.
     private var faceFront: Bool = true {
         didSet {
-            self.faceViewController?.representedObject = self.faceFront ? self.presentingCard?.front : self.presentingCard?.back
+            self.faceViewController?.representedObject = self.faceFront ? self.presentingCard?.frontValue : self.presentingCard?.backValue
         }
     }
     
@@ -168,10 +168,12 @@ public class DeckWindowController: NSWindowController {
 public class FaceViewController: NSViewController {
     @IBOutlet private var imageView: NSImageView! = nil
     @IBOutlet private var textView: NSTextView! = nil
-    @IBOutlet private var noneLabel: NSTextField! = nil
+    @IBOutlet private var textLabel: NSTextField! = nil
     
     // Used by clients to track if pressed.
     public var pressHandler: (() -> ())? = nil
+    
+    public var noneString = "No Card"
     
     public override func viewDidLoad() {
         self.representedObject = nil
@@ -183,39 +185,48 @@ public class FaceViewController: NSViewController {
         self.pressHandler?()
     }
     
+    
+    
     // Toggle between the image view and text view based on the represented object type.
     public override var representedObject: Any? {
         didSet {
             DispatchQueue.main.async {
                 if let rep = self.representedObject as? String {
                     self.imageView.isHidden = true
-                    self.textView.isHidden = false
-                    self.noneLabel.isHidden = true
+                    self.textView.isHidden = true
+                    self.textLabel.isHidden = false
                     
                     self.imageView.image = nil
-                    self.textView.textStorage?.setAttributedString(NSAttributedString(string: rep))
+                    self.textView.string = ""
+                    self.textLabel.stringValue = rep
                 } else if let rep = self.representedObject as? NSAttributedString {
                     self.imageView.isHidden = true
                     self.textView.isHidden = false
-                    self.noneLabel.isHidden = true
+                    self.textLabel.isHidden = true
                     
                     self.imageView.image = nil
                     self.textView.textStorage?.setAttributedString(rep)
+                    self.textLabel.stringValue = ""
                 } else if let rep = self.representedObject as? NSImage {
                     self.imageView.isHidden = false
                     self.textView.isHidden = true
-                    self.noneLabel.isHidden = true
+                    self.textLabel.isHidden = true
                     
                     self.imageView.image = rep
-                    self.textView.textStorage?.setAttributedString(NSAttributedString())
+                    self.textView.string = ""
+                    self.textLabel.stringValue = ""
                 } else {
                     self.imageView.isHidden = true
                     self.textView.isHidden = true
-                    self.noneLabel.isHidden = false
+                    self.textLabel.isHidden = false
                     
                     self.imageView.image = nil
-                    self.textView.textStorage?.setAttributedString(NSAttributedString())
+                    self.textView.string = ""
+                    self.textLabel.stringValue = self.noneString
                 }
+                
+                /// Adjust the none string's color to be quieter.
+                self.textLabel.textColor = self.representedObject == nil ? .tertiaryLabelColor : .labelColor
             }
         }
     }
@@ -246,17 +257,28 @@ public class ResponseViewController: NSViewController {
 public class DeckListController: NSViewController, NSTableViewDelegate, NSTableViewDataSource {
     
     @IBOutlet var tableView: NSTableView!
-    @IBOutlet var frontImage: NSImageView!
-    @IBOutlet var backImage: NSImageView!
-    @IBOutlet var noneLabel: NSTextField!
+    @IBOutlet var preview: ReferencingView!
     
     public override func viewWillAppear() {
         self.tableView.enclosingScrollView?.scrollerStyle = .overlay // FIXME in IB
         self.tableViewSelectionDidChange(Notification(name: NSTableView.selectionDidChangeNotification))
+        
+        self.previewController?.noneString = "No Card Selected"
+        self.previewController?.pressHandler = {
+            guard self.tableView.selectedRow > 0 else { return }
+            let card = self.cards[self.tableView.selectedRow]
+            
+            // can't flip back!
+            self.previewController?.representedObject = card.backValue
+        }
     }
     
     private var cards: [Card] {
         return (self.representedObject as? Deck)?.cards ?? []
+    }
+    
+    private var previewController: FaceViewController? {
+        return self.childViewControllers.first as? FaceViewController
     }
     
     public func numberOfRows(in tableView: NSTableView) -> Int {
@@ -276,18 +298,9 @@ public class DeckListController: NSViewController, NSTableViewDelegate, NSTableV
     public func tableViewSelectionDidChange(_ notification: Notification) {
         if self.tableView.selectedRowIndexes.count == 1 {
             let card = self.cards[self.tableView.selectedRow]
-            
-            self.frontImage.image = card.front as? NSImage
-            self.backImage.image = card.back as? NSImage
-            self.frontImage.isHidden = false
-            self.backImage.isHidden = false
-            self.noneLabel.isHidden = true
+            self.previewController?.representedObject = card.frontValue
         } else {
-            self.frontImage.image = nil
-            self.backImage.image = nil
-            self.frontImage.isHidden = true
-            self.backImage.isHidden = true
-            self.noneLabel.isHidden = false
+            self.previewController?.representedObject = nil
         }
     }
     
@@ -295,12 +308,6 @@ public class DeckListController: NSViewController, NSTableViewDelegate, NSTableV
         guard self.tableView.selectedRowIndexes.count == 1 else { return }
         //deck.cards[self.tableView.selectedRow]
         print("click!", sender)
-    }
-    
-    @IBAction func addCard(_ sender: NSButton!) {
-        guard let deck = self.representedObject as? Deck else { return }
-        deck.cards.append(Card(front: URL(fileURLWithPath: "/"), back: URL(fileURLWithPath: "/")))
-        self.tableView.reloadData()
     }
     
     @IBAction func removeCard(_ sender: NSButton!) {
@@ -311,9 +318,16 @@ public class DeckListController: NSViewController, NSTableViewDelegate, NSTableV
         self.tableView.reloadData()
     }
     
+    
+    /// Add a new card with text contents.
+    @IBAction func addCard(_ sender: NSMenuItem!) {
+        guard let deck = self.representedObject as? Deck else { return }
+        deck.cards.append(Card(front: "Front", back: "Back"))
+        self.tableView.reloadData()
+    }
+    
     /// Add a new card by taking a screenshot and marking it up.
-    // TODO: MAKE THIS DO REAL THINGS
-    @IBAction public func screenshot(_ sender: NSButton!) {
+    @IBAction public func screenshot(_ sender: NSMenuItem!) {
         guard let deck = self.representedObject as? Deck else { return }
         
         // Hide the window, take the screenshot, and show the window afterwards!
@@ -333,15 +347,17 @@ public class DeckListController: NSViewController, NSTableViewDelegate, NSTableV
                 guard let base = deck.fileURL?.appendingPathComponent("Contents") else {
                     throw CocoaError(.fileNoSuchFile)
                 }
-                let imageURL = base.appendingPathComponent("\(UUID().uuidString).png")
-                let markedURL = base.appendingPathComponent("\(UUID().uuidString) - Markup.png")
+                let id = UUID().uuidString
+                
+                let imageURL = URL(fileURLWithPath: "\(id) - Screenshot.png", relativeTo: base)
+                let markedURL = URL(fileURLWithPath: "\(id) - Markup.png", relativeTo: base)
                 
                 try image.write(to: imageURL, type: .png)
                 try marked.write(to: markedURL, type: .png)
                 
                 // Update with a new card.
                 DispatchQueue.main.async {
-                    deck.cards.append(Card(front: imageURL, back: markedURL))
+                    deck.cards.append(Card(front: imageURL.absoluteString, back: markedURL.absoluteString))
                     self.tableView.reloadData()
                 }
             } catch(let error) {
