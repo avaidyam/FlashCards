@@ -92,7 +92,7 @@ public class Deck: NSDocument {
         } catch(let error) {
             DispatchQueue.main.async {
                 self.presentError(error)
-                self.cards = [] // this package didn't have an Info.plist!
+                self.close()
             }
         }
     }
@@ -114,6 +114,7 @@ public class Deck: NSDocument {
                 "Info.plist": FileWrapper(regularFileWithContents: info)
             ])
         ]).write(to: url, options: [], originalContentsURL: nil)
+        try FileManager.default.setAttributes([.extensionHidden : true], ofItemAtPath: url.path)
         Swift.print("Package written!")
         
         // If we already exist and we're save-as/to'ing, then copy all ref'd files too.
@@ -124,4 +125,17 @@ public class Deck: NSDocument {
             try FileManager.default.copyItem(at: file, to: url.appendingPathComponent("Contents").appendingPathComponent(file.lastPathComponent))
         }
     }
+    
+    // TODO: make modal alerts display as sheets
+    /*
+    @discardableResult
+    public override func presentError(_ error: Error) -> Bool {
+        if let window = self.windowForSheet {
+            super.presentError(error, modalFor: window, delegate: nil, didPresent: nil, contextInfo: nil)
+            return false // ???
+        } else {
+            return super.presentError(error)
+        }
+    }
+    */
 }

@@ -174,3 +174,30 @@ public class ClickableImageView: NSImageView {
         }
     }
 }
+
+public extension String {
+    
+    /// Returns the largest font size capable of fitting within the bounds given.
+    /// maximumFactor: the percentage of the bounds' smallest dimension to use as the
+    /// maximum size. absoluteMinimum: the absolute smallest font size possible.
+    public func fittingSize(within bounds: CGSize, maximumFactor: CGFloat = 0.25,
+                            absoluteMinimum minSize: CGFloat = 12.0) -> CGFloat
+    {
+        // Helper function to get the bounding size from a string with a font size.
+        func bounding(_ str: String, _ currSize: CGFloat) -> NSSize? {
+            let fit = NSSize(width: bounds.width, height: .greatestFiniteMagnitude)
+            let res = (str as NSString).boundingRect(with: fit,
+                             options: [.usesLineFragmentOrigin, .usesFontLeading],
+                             attributes: [.font: NSFont.systemFont(ofSize: currSize),
+                                          .paragraphStyle: NSParagraphStyle.default])
+            return Optional(NSSize(width: ceil(res.width), height: ceil(res.height)))
+        }
+        
+        // Loop down until the largest font size fitting the bounds.
+        var currSize = ceil(min(bounds.width, bounds.height) * maximumFactor)
+        while let sz = bounding(self, currSize), (sz.height > bounds.height || sz.width > bounds.width) && currSize > minSize {
+            currSize -= 1.0
+        }
+        return currSize <= minSize ? minSize : currSize
+    }
+}

@@ -9,6 +9,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         return true
     }
     
+    func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
+        return false//true
+    }
+    
     /// Add an opened deck to the saved deck list.
     public func application(_ sender: NSApplication, openFile filename: String) -> Bool {
         NSDocumentController.shared.openDocument(withContentsOf: URL(fileURLWithPath: filename), display: true) { _, _, _ in }
@@ -136,6 +140,12 @@ public class DeckWindowController: NSWindowController {
             } else {
                 self.timer.title = "\(Int(self.timeLeft!))"
             }
+            
+            // TODO: Prevent long bezels:
+            self.timer.sizeToFit()
+            let item = self.window?.toolbar?.items.first { $0.label == "Timer" }
+            item?.minSize = self.timer.fittingSize
+            item?.maxSize = self.timer.fittingSize
         }
     }
     
@@ -144,11 +154,11 @@ public class DeckWindowController: NSWindowController {
     var hadTimerInterval = false {
         didSet { self.timeLeft = self.hadTimerInterval ? nil : DeckWindowController.defaultTimerInterval }
     }
-    @IBAction func timer(_ sender: NSButton!) {
+    @IBAction func timer(_ sender: Any!) {
         self.timeLeft = self.timeLeft != nil ? nil : DeckWindowController.defaultTimerInterval
     }
     
-    @IBAction func edit(_ sender: NSButton!) {
+    @IBAction func edit(_ sender: Any!) {
         guard let deck = self.document as? Deck else { return }
         self.listController?.representedObject = deck
         self.timeLeft = nil // disable the timer
@@ -187,8 +197,6 @@ public class FaceViewController: NSViewController {
                               in: self.view.bounds) else { return }
         self.pressHandler?()
     }
-    
-    
     
     // Toggle between the image view and text view based on the represented object type.
     public override var representedObject: Any? {
@@ -237,22 +245,30 @@ public class FaceViewController: NSViewController {
         
         /// Adjust the none string's color to be quieter.
         self.textLabel.textColor = self.representedObject == nil ? .tertiaryLabelColor : .labelColor
-        let bound = min(self.view.bounds.size.width, self.view.bounds.size.height)
-        self.textLabel.font = NSFont.systemFont(ofSize: bound * 0.2)
+        self.textLabel.font = NSFont.systemFont(ofSize: self.textLabel.stringValue.fittingSize(within: self.view.bounds.insetBy(dx: 16, dy: 16).size))
     }
 }
 
 public class ResponseViewController: NSViewController {
+    
+    @IBOutlet var incorrectResponses: NSSegmentedControl!
+    @IBOutlet var correctResponses: NSSegmentedControl!
     
     // Used by clients to track if pressed.
     public var responseHandler: ((Int) -> ())? = nil
     
     public override func keyDown(with event: NSEvent) {
         // Ignore the silly beep.
+        guard event.keyCode >= 18 && event.keyCode <= 23 else { return }
+        self.incorrectResponses.selectSegment(withTag: Int(event.keyCode - 18))
+        self.correctResponses.selectSegment(withTag: Int(event.keyCode - 18))
     }
     
     public override func keyUp(with event: NSEvent) {
         guard event.keyCode >= 18 && event.keyCode <= 23 else { return }
+        _ = self.incorrectResponses.cell?.perform(Selector(("_deselectAllSegments")))
+        _ = self.correctResponses.cell?.perform(Selector(("_deselectAllSegments")))
+        
         self.dismiss(self)
         self.responseHandler?(Int(event.keyCode - 18))
     }

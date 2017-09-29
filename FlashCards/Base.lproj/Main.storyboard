@@ -605,19 +605,6 @@
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <menu key="submenu" title="View" id="HyV-fh-RgO">
                                     <items>
-                                        <menuItem title="Show Toolbar" keyEquivalent="t" id="snW-S8-Cw5">
-                                            <modifierMask key="keyEquivalentModifierMask" option="YES" command="YES"/>
-                                            <connections>
-                                                <action selector="toggleToolbarShown:" target="Ady-hI-5gd" id="BXY-wc-z0C"/>
-                                            </connections>
-                                        </menuItem>
-                                        <menuItem title="Customize Toolbar…" id="1UK-8n-QPP">
-                                            <modifierMask key="keyEquivalentModifierMask"/>
-                                            <connections>
-                                                <action selector="runToolbarCustomizationPalette:" target="Ady-hI-5gd" id="pQI-g3-MTW"/>
-                                            </connections>
-                                        </menuItem>
-                                        <menuItem isSeparatorItem="YES" id="hB3-LF-h0Y"/>
                                         <menuItem title="Show Sidebar" keyEquivalent="s" id="kIP-vf-haE">
                                             <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
                                             <connections>
@@ -693,38 +680,44 @@
                         <rect key="screenRect" x="0.0" y="0.0" width="1680" height="1027"/>
                         <toolbar key="toolbar" implicitIdentifier="7355452D-D56D-4DAD-B38B-26C93F536FD2" autosavesConfiguration="NO" allowsUserCustomization="NO" displayMode="iconOnly" sizeMode="regular" id="WIp-4X-EMO">
                             <allowedToolbarItems>
-                                <toolbarItem implicitItemIdentifier="2C35C313-B060-4E2C-A71C-223D53470E59" label="Custom View" paletteLabel="Custom View" image="NSActionTemplate" id="OU2-Im-iir">
+                                <toolbarItem implicitItemIdentifier="2C35C313-B060-4E2C-A71C-223D53470E59" label="Edit" paletteLabel="Edit" image="NSActionTemplate" visibilityPriority="1000" id="OU2-Im-iir">
                                     <nil key="toolTip"/>
-                                    <size key="minSize" width="25" height="25"/>
+                                    <size key="minSize" width="25" height="20"/>
                                     <size key="maxSize" width="25" height="25"/>
                                     <button key="view" verticalHuggingPriority="750" id="1Cf-mM-EyK">
-                                        <rect key="frame" x="26" y="14" width="25" height="25"/>
+                                        <rect key="frame" x="2" y="14" width="25" height="20"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="roundTextured" bezelStyle="texturedRounded" image="NSActionTemplate" imagePosition="overlaps" alignment="center" lineBreakMode="truncatingTail" state="on" imageScaling="proportionallyDown" inset="2" id="bkD-i5-hNm">
+                                        <buttonCell key="cell" type="recessed" bezelStyle="recessed" image="NSActionTemplate" imagePosition="overlaps" alignment="center" lineBreakMode="truncatingTail" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="bkD-i5-hNm">
                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                            <font key="font" metaFont="system"/>
+                                            <font key="font" metaFont="systemBold" size="12"/>
                                         </buttonCell>
                                         <connections>
                                             <action selector="edit:" target="B8D-0N-5wS" id="CbO-sm-n3j"/>
                                         </connections>
                                     </button>
+                                    <connections>
+                                        <action selector="edit:" target="B8D-0N-5wS" id="9O6-Bi-cNM"/>
+                                    </connections>
                                 </toolbarItem>
                                 <toolbarItem implicitItemIdentifier="NSToolbarFlexibleSpaceItem" id="525-tQ-orD"/>
-                                <toolbarItem implicitItemIdentifier="678F9A19-77B4-444E-A098-93869E126F54" label="Custom View" paletteLabel="Custom View" id="H41-wO-cnh">
+                                <toolbarItem implicitItemIdentifier="678F9A19-77B4-444E-A098-93869E126F54" label="Timer" paletteLabel="Timer" visibilityPriority="1000" id="H41-wO-cnh">
                                     <nil key="toolTip"/>
-                                    <size key="minSize" width="76" height="22"/>
-                                    <size key="maxSize" width="76" height="22"/>
+                                    <size key="minSize" width="22" height="20"/>
+                                    <size key="maxSize" width="82" height="22"/>
                                     <button key="view" verticalHuggingPriority="750" id="WIP-UA-UHd">
-                                        <rect key="frame" x="0.0" y="14" width="76" height="22"/>
+                                        <rect key="frame" x="0.0" y="14" width="82" height="20"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
-                                        <buttonCell key="cell" type="bevel" title="TIMER OFF" bezelStyle="rounded" alignment="right" imageScaling="proportionallyDown" inset="2" id="KCw-4R-2R7">
-                                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
-                                            <font key="font" metaFont="system"/>
+                                        <buttonCell key="cell" type="recessed" title="TIMER OFF" bezelStyle="recessed" alignment="right" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="KCw-4R-2R7">
+                                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                            <font key="font" metaFont="systemBold" size="12"/>
                                         </buttonCell>
                                         <connections>
                                             <action selector="timer:" target="B8D-0N-5wS" id="byA-xN-llr"/>
                                         </connections>
                                     </button>
+                                    <connections>
+                                        <action selector="timer:" target="B8D-0N-5wS" id="bct-lg-d26"/>
+                                    </connections>
                                 </toolbarItem>
                             </allowedToolbarItems>
                             <defaultToolbarItems>
@@ -871,7 +864,7 @@
                                 </connections>
                             </containerView>
                             <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="3b3-e2-tEF">
-                                <rect key="frame" x="231" y="6" width="64" height="25"/>
+                                <rect key="frame" x="228" y="6" width="67" height="25"/>
                                 <buttonCell key="cell" type="roundTextured" title="DONE" bezelStyle="texturedRounded" image="NSStopProgressFreestandingTemplate" imagePosition="left" alignment="center" lineBreakMode="truncatingTail" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="IhS-Yz-Y8D">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="smallSystemBold"/>
@@ -967,20 +960,6 @@ Gw
                         <rect key="frame" x="0.0" y="0.0" width="553" height="149"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
-                            <segmentedControl verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="4s9-y9-ShI">
-                                <rect key="frame" x="100" y="19" width="433" height="23"/>
-                                <segmentedCell key="cell" borderStyle="border" alignment="left" segmentDistribution="fill" style="texturedRounded" trackingMode="momentary" id="jAX-Mt-ZFn">
-                                    <font key="font" metaFont="system"/>
-                                    <segments>
-                                        <segment label="It was difficult." tag="3"/>
-                                        <segment label="A little hesitation" tag="4"/>
-                                        <segment label="Perfect!" tag="5"/>
-                                    </segments>
-                                </segmentedCell>
-                                <connections>
-                                    <action selector="respond:" target="ZVB-dw-HVb" id="lkg-7D-zOK"/>
-                                </connections>
-                            </segmentedControl>
                             <segmentedControl verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="61s-Of-GAP">
                                 <rect key="frame" x="100" y="49" width="433" height="23"/>
                                 <segmentedCell key="cell" borderStyle="border" alignment="left" segmentDistribution="fill" style="texturedRounded" trackingMode="momentary" id="vu4-nW-QTk">
@@ -993,6 +972,20 @@ Gw
                                 </segmentedCell>
                                 <connections>
                                     <action selector="respond:" target="ZVB-dw-HVb" id="mR3-V0-Win"/>
+                                </connections>
+                            </segmentedControl>
+                            <segmentedControl verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="4s9-y9-ShI">
+                                <rect key="frame" x="100" y="19" width="433" height="23"/>
+                                <segmentedCell key="cell" borderStyle="border" alignment="left" segmentDistribution="fill" style="texturedRounded" trackingMode="momentary" id="jAX-Mt-ZFn">
+                                    <font key="font" metaFont="system"/>
+                                    <segments>
+                                        <segment label="It was difficult." tag="3"/>
+                                        <segment label="A little hesitation" tag="4"/>
+                                        <segment label="Perfect!" tag="5"/>
+                                    </segments>
+                                </segmentedCell>
+                                <connections>
+                                    <action selector="respond:" target="ZVB-dw-HVb" id="lkg-7D-zOK"/>
                                 </connections>
                             </segmentedControl>
                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="oGj-bG-NBH">
@@ -1049,6 +1042,10 @@ Gw
                             <constraint firstItem="z6B-Cv-img" firstAttribute="width" secondItem="Dqx-KQ-qtS" secondAttribute="width" id="x8K-Y6-EQv"/>
                         </constraints>
                     </view>
+                    <connections>
+                        <outlet property="correctResponses" destination="4s9-y9-ShI" id="fCC-4u-BM7"/>
+                        <outlet property="incorrectResponses" destination="61s-Of-GAP" id="Xlc-bf-aG6"/>
+                    </connections>
                 </viewController>
                 <customObject id="gAe-4Z-YwS" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
@@ -1355,7 +1352,7 @@ Gw
         <image name="NSAddTemplate" width="11" height="11"/>
         <image name="NSMenuOnStateTemplate" width="12" height="12"/>
         <image name="NSRemoveTemplate" width="11" height="11"/>
-        <image name="NSStopProgressFreestandingTemplate" width="11" height="11"/>
+        <image name="NSStopProgressFreestandingTemplate" width="14" height="14"/>
     </resources>
     <inferredMetricsTieBreakers>
         <segue reference="Rs4-AK-zKw"/>
