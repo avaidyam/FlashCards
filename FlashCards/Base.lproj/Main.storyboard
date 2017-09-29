@@ -864,7 +864,7 @@
                                 </connections>
                             </containerView>
                             <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="3b3-e2-tEF">
-                                <rect key="frame" x="228" y="6" width="67" height="25"/>
+                                <rect key="frame" x="231" y="6" width="64" height="25"/>
                                 <buttonCell key="cell" type="roundTextured" title="DONE" bezelStyle="texturedRounded" image="NSStopProgressFreestandingTemplate" imagePosition="left" alignment="center" lineBreakMode="truncatingTail" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="IhS-Yz-Y8D">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="smallSystemBold"/>
@@ -1051,10 +1051,10 @@ Gw
             </objects>
             <point key="canvasLocation" x="-424" y="674"/>
         </scene>
-        <!--Face View Controller-->
+        <!--Card View Controller-->
         <scene sceneID="7pR-wb-wVm">
             <objects>
-                <viewController id="iVg-HV-R2J" customClass="FaceViewController" customModule="FlashCards" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="iVg-HV-R2J" customClass="CardViewController" customModule="FlashCards" customModuleProvider="target" sceneMemberID="viewController">
                     <visualEffectView key="view" wantsLayer="YES" blendingMode="behindWindow" material="appearanceBased" state="followsWindowActiveState" id="bkt-en-QGG">
                         <rect key="frame" x="0.0" y="0.0" width="470" height="211"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
@@ -1081,32 +1081,6 @@ Gw
                                     <autoresizingMask key="autoresizingMask"/>
                                 </scroller>
                             </scrollView>
-                            <scrollView borderType="none" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="6ZU-Te-9si">
-                                <rect key="frame" x="0.0" y="0.0" width="470" height="211"/>
-                                <clipView key="contentView" drawsBackground="NO" copiesOnScroll="NO" id="3yO-zq-GVE">
-                                    <rect key="frame" x="0.0" y="0.0" width="470" height="211"/>
-                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                    <subviews>
-                                        <textView editable="NO" selectable="NO" drawsBackground="NO" importsGraphics="NO" verticallyResizable="YES" allowsCharacterPickerTouchBarItem="NO" allowsNonContiguousLayout="YES" textCompletion="NO" id="Uo6-9A-aXg">
-                                            <rect key="frame" x="0.0" y="0.0" width="470" height="211"/>
-                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                            <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                            <size key="minSize" width="470" height="211"/>
-                                            <size key="maxSize" width="470" height="10000000"/>
-                                            <color key="insertionPointColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
-                                        </textView>
-                                    </subviews>
-                                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                </clipView>
-                                <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" doubleValue="1" horizontal="YES" id="0Kr-g5-bsY">
-                                    <rect key="frame" x="-100" y="-100" width="87" height="18"/>
-                                    <autoresizingMask key="autoresizingMask"/>
-                                </scroller>
-                                <scroller key="verticalScroller" verticalHuggingPriority="750" doubleValue="1" horizontal="NO" id="B6s-p0-ihO">
-                                    <rect key="frame" x="454" y="0.0" width="16" height="211"/>
-                                    <autoresizingMask key="autoresizingMask"/>
-                                </scroller>
-                            </scrollView>
                             <textField wantsLayer="YES" horizontalHuggingPriority="2" verticalHuggingPriority="2" horizontalCompressionResistancePriority="2" verticalCompressionResistancePriority="2" translatesAutoresizingMaskIntoConstraints="NO" id="3wg-vb-l5d">
                                 <rect key="frame" x="-2" y="91" width="474" height="29"/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="center" title="Text" id="iSf-Jq-LCC">
@@ -1120,20 +1094,15 @@ Gw
                             <constraint firstItem="3wg-vb-l5d" firstAttribute="centerY" secondItem="bkt-en-QGG" secondAttribute="centerY" id="83p-we-RTD"/>
                             <constraint firstItem="b9A-Qc-3r6" firstAttribute="leading" secondItem="bkt-en-QGG" secondAttribute="leading" id="8KF-mV-dQd"/>
                             <constraint firstAttribute="bottom" secondItem="b9A-Qc-3r6" secondAttribute="bottom" id="AcF-6t-gNf"/>
-                            <constraint firstAttribute="trailing" secondItem="6ZU-Te-9si" secondAttribute="trailing" id="Bex-VS-dSl"/>
                             <constraint firstAttribute="trailing" secondItem="b9A-Qc-3r6" secondAttribute="trailing" id="DUP-q4-yUC"/>
-                            <constraint firstItem="6ZU-Te-9si" firstAttribute="leading" secondItem="bkt-en-QGG" secondAttribute="leading" id="HnM-ws-E7f"/>
                             <constraint firstItem="3wg-vb-l5d" firstAttribute="centerX" secondItem="bkt-en-QGG" secondAttribute="centerX" id="MZh-yS-7OH"/>
                             <constraint firstItem="3wg-vb-l5d" firstAttribute="width" secondItem="bkt-en-QGG" secondAttribute="width" id="Q3B-ib-su1"/>
-                            <constraint firstAttribute="bottom" secondItem="6ZU-Te-9si" secondAttribute="bottom" id="VbV-Q9-mgO"/>
                             <constraint firstItem="b9A-Qc-3r6" firstAttribute="top" secondItem="bkt-en-QGG" secondAttribute="top" id="eO0-ZL-pSs"/>
-                            <constraint firstItem="6ZU-Te-9si" firstAttribute="top" secondItem="bkt-en-QGG" secondAttribute="top" id="hvu-kM-hgb"/>
                         </constraints>
                     </visualEffectView>
                     <connections>
                         <outlet property="imageView" destination="rYC-7w-YYC" id="O17-H7-vHh"/>
                         <outlet property="textLabel" destination="3wg-vb-l5d" id="Ocm-zS-JRX"/>
-                        <outlet property="textView" destination="Uo6-9A-aXg" id="EwU-Yv-JLI"/>
                     </connections>
                 </viewController>
                 <customObject id="F6c-XO-SUa" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
@@ -1166,6 +1135,9 @@ Gw
                                     <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
+                                <connections>
+                                    <action selector="performClick:" target="khW-k6-gGh" id="Ti2-Xz-KVZ"/>
+                                </connections>
                             </textField>
                             <box verticalHuggingPriority="750" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="wbF-xj-hzH">
                                 <rect key="frame" x="8" y="89" width="338" height="5"/>
@@ -1188,6 +1160,9 @@ Gw
                                     <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
+                                <connections>
+                                    <action selector="performClick:" target="Hrb-Mf-d44" id="StE-ch-unX"/>
+                                </connections>
                             </textField>
                             <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Hrb-Mf-d44">
                                 <rect key="frame" x="284" y="6" width="62" height="25"/>
@@ -1352,7 +1327,7 @@ Gw
         <image name="NSAddTemplate" width="11" height="11"/>
         <image name="NSMenuOnStateTemplate" width="12" height="12"/>
         <image name="NSRemoveTemplate" width="11" height="11"/>
-        <image name="NSStopProgressFreestandingTemplate" width="14" height="14"/>
+        <image name="NSStopProgressFreestandingTemplate" width="11" height="11"/>
     </resources>
     <inferredMetricsTieBreakers>
         <segue reference="Rs4-AK-zKw"/>

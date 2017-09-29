@@ -183,8 +183,8 @@ public extension String {
     public func fittingSize(within bounds: CGSize, maximumFactor: CGFloat = 0.25,
                             absoluteMinimum minSize: CGFloat = 12.0) -> CGFloat
     {
-        // Helper function to get the bounding size from a string with a font size.
-        func bounding(_ str: String, _ currSize: CGFloat) -> NSSize? {
+        // Helper function (boundingRect) to get the bounding size from a string with a font size.
+        func bounding1(_ str: String, _ currSize: CGFloat) -> NSSize? {
             let fit = NSSize(width: bounds.width, height: .greatestFiniteMagnitude)
             let res = (str as NSString).boundingRect(with: fit,
                              options: [.usesLineFragmentOrigin, .usesFontLeading],
@@ -193,9 +193,23 @@ public extension String {
             return Optional(NSSize(width: ceil(res.width), height: ceil(res.height)))
         }
         
+        // An alternative CTFramesetter-based version.
+        func bounding2(_ str: String, _ currSize: CGFloat) -> NSSize? {
+            let paragraphStyle = NSMutableParagraphStyle()
+            paragraphStyle.lineSpacing = NSFont.systemFont(ofSize: 12.0).leading
+            let attr = NSAttributedString(string: str, attributes: [
+                .font: NSFont.systemFont(ofSize: currSize),
+                .paragraphStyle: paragraphStyle
+            ])
+            let set = CTFramesetterCreateWithAttributedString(attr)
+            let fit = NSSize(width: bounds.width, height: .greatestFiniteMagnitude)
+            let res = CTFramesetterSuggestFrameSizeWithConstraints(set, CFRangeMake(0, 0), nil, fit, nil)
+            return Optional(NSSize(width: ceil(res.width), height: ceil(res.height)))
+        }
+        
         // Loop down until the largest font size fitting the bounds.
         var currSize = ceil(min(bounds.width, bounds.height) * maximumFactor)
-        while let sz = bounding(self, currSize), (sz.height > bounds.height || sz.width > bounds.width) && currSize > minSize {
+        while let sz = bounding2(self, currSize), (sz.height > bounds.height || sz.width > bounds.width) && currSize > minSize {
             currSize -= 1.0
         }
         return currSize <= minSize ? minSize : currSize
