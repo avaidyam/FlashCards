@@ -40,7 +40,7 @@ public class DeckWindowController: NSWindowController {
     @IBOutlet var timer: NSButton!
     
     private var cardViewController: CardViewController? {
-        return self.contentViewController as? CardViewController
+        return self.contentViewController?.childViewControllers[0] as? CardViewController
     }
     
     private lazy var responseController: ResponseViewController? = {
@@ -78,7 +78,7 @@ public class DeckWindowController: NSWindowController {
         }
         
         // Flip the card or show a response dialog.
-        self.cardViewController?.action = {
+        self.cardViewController?.action = { _ in
             if self.faceFront {
                 self.faceFront = !self.faceFront
             } else {
@@ -152,7 +152,7 @@ public class DeckWindowController: NSWindowController {
     // Patch spacebar into the flipping mechanism.
     public override func keyUp(with event: NSEvent) {
         if event.keyCode == 49 {
-            self.cardViewController?.action?()
+            self.cardViewController?.action?(.complete)
         }
     }
 }

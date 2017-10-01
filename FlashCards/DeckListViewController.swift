@@ -10,7 +10,7 @@ public class DeckListController: NSViewController, NSTableViewDelegate, NSTableV
         self.tableViewSelectionDidChange(Notification(name: NSTableView.selectionDidChangeNotification))
         
         self.previewController?.placeholderString = "No Card Selected"
-        self.previewController?.action = {
+        self.previewController?.action = { _ in
             guard let deck = self.representedObject as? Deck else { return }
             guard self.tableView.selectedRow >= 0 else { return }
             let card = self.cards[self.tableView.selectedRow]
@@ -79,6 +79,7 @@ public class DeckListController: NSViewController, NSTableViewDelegate, NSTableV
             deck.cards.remove(at: $0)
         }
         self.tableView.reloadData()
+        self.previewController?.representedObject = nil
     }
     
     public override func dismissViewController(_ viewController: NSViewController) {
@@ -116,21 +117,21 @@ public class DeckListController: NSViewController, NSTableViewDelegate, NSTableV
     }
     
     /// Add a new card with text contents.
-    @IBAction func addCard(_ sender: NSMenuItem!) {
+    @IBAction func addCard(_ sender: Any!) {
         let storyboard = NSStoryboard(name: NSStoryboard.Name("Main"), bundle: nil)
         let vc = storyboard.instantiateController(withIdentifier: NSStoryboard.SceneIdentifier("EditTextController")) as! EditTextController
         self.presentViewControllerAsSheet(vc)
     }
     
     /// Add a new card with text contents.
-    @IBAction func addImageCard(_ sender: NSMenuItem!) {
+    @IBAction func addImageCard(_ sender: Any!) {
         let storyboard = NSStoryboard(name: NSStoryboard.Name("Main"), bundle: nil)
         let vc = storyboard.instantiateController(withIdentifier: NSStoryboard.SceneIdentifier("EditImageController")) as! EditImageController
         self.presentViewControllerAsSheet(vc)
     }
     
     /// Add a new card by taking a screenshot and marking it up.
-    @IBAction public func screenshot(_ sender: NSMenuItem!) {
+    @IBAction public func screenshot(_ sender: Any!) {
         guard let deck = self.representedObject as? Deck else { return }
         
         // Hide the window, take the screenshot, and show the window afterwards!
@@ -172,3 +173,60 @@ public class DeckListController: NSViewController, NSTableViewDelegate, NSTableV
         }
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+/// Display a list of each saved deck and each card within them, available for editing.
+public class DeckListController2: NSViewController, NSCollectionViewDelegateFlowLayout, NSCollectionViewDataSource {
+    
+    @IBOutlet var collectionView: NSCollectionView!
+    
+    private var cards: [Card] {
+        return (self.representedObject as? Deck)?.cards ?? []
+    }
+    
+    public func collectionView(_ collectionView: NSCollectionView, numberOfItemsInSection section: Int) -> Int {
+        return self.cards.count
+    }
+    
+    public func collectionView(_ collectionView: NSCollectionView, itemForRepresentedObjectAt indexPath: IndexPath) -> NSCollectionViewItem {
+        var v = collectionView.makeItem(withIdentifier: NSUserInterfaceItemIdentifier(rawValue: "CardViewController"), for: indexPath) as? CardViewController
+        if v == nil {
+            let storyboard = NSStoryboard(name: NSStoryboard.Name("Main"), bundle: nil)
+            v = storyboard.instantiateController(withIdentifier: NSStoryboard.SceneIdentifier("CardViewController")) as? CardViewController
+            v?.identifier = NSUserInterfaceItemIdentifier(rawValue: "CardViewController")
+        }
+        
+        let deck = self.representedObject as! Deck
+        v!.representedObject = self.cards[indexPath.item].frontValue(deck.fileURL!)
+        self.configure(item: v!)
+        return v!
+    }
+    
+    private func configure(item v: NSCollectionViewItem) {
+        let parent = v.view
+        let child = v.view.subviews[0]
+        
+        parent.wantsLayer = true
+        parent.layer!.shadowColor = .black
+        parent.layer!.shadowOffset = CGSize(width: 0.0, height: -2.0)
+        parent.layer!.shadowRadius = 2.0
+        parent.layer!.shadowOpacity = 0.5
+        
+        child.wantsLayer = true
+        child.layer!.backgroundColor = NSColor.windowBackgroundColor.cgColor
+        child.layer!.cornerRadius = 3.5
+        child.layer!.masksToBounds = true
+    }
+}
+

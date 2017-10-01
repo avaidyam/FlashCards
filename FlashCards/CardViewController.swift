@@ -1,7 +1,7 @@
 import Cocoa
 
-/// Presents a reversible card (text or image).
-public class CardViewController: NSViewController {
+/// Presents a reversible card (text or image). Can be used in an NSCollectionView as well.
+public class CardViewController: NSCollectionViewItem {
     
     /// Describes the three states the controller can move a card in.
     /// front: the front face of the card is being displayed.
@@ -11,16 +11,15 @@ public class CardViewController: NSViewController {
         case front, back, complete
     }
     
-    @IBOutlet private var imageView: NSImageView! = nil
-    @IBOutlet private var textLabel: NSTextField! = nil
-    
     // Used by clients to track if pressed.
-    public var action: (() -> ())? = nil
+    public var action: ((FlipState) -> ())? = nil
     
     public var placeholderString = "No Card" {
         didSet {
             if self.representedObject == nil {
-                self.textLabel.stringValue = self.placeholderString
+                DispatchQueue.main.async {
+                    self.textField?.stringValue = self.placeholderString
+                }
             }
         }
     }
@@ -32,7 +31,7 @@ public class CardViewController: NSViewController {
     public override func mouseUp(with event: NSEvent) {
         guard self.view.mouse(self.view.convert(event.locationInWindow, from: nil),
                               in: self.view.bounds) else { return }
-        self.action?()
+        self.action?(.complete)
     }
     
     /// Toggle between the image view and text label based on the represented object type.
@@ -40,29 +39,29 @@ public class CardViewController: NSViewController {
         didSet {
             DispatchQueue.main.async {
                 if let rep = self.representedObject as? String {
-                    self.imageView.isHidden = true
-                    self.textLabel.isHidden = false
+                    self.imageView?.isHidden = true
+                    self.textField?.isHidden = false
                     
-                    self.imageView.image = nil
-                    self.textLabel.stringValue = rep
+                    self.imageView?.image = nil
+                    self.textField?.stringValue = rep
                 } else if let rep = self.representedObject as? NSAttributedString {
-                    self.imageView.isHidden = true
-                    self.textLabel.isHidden = true
+                    self.imageView?.isHidden = true
+                    self.textField?.isHidden = true
                     
-                    self.imageView.image = nil
-                    self.textLabel.attributedStringValue = rep
+                    self.imageView?.image = nil
+                    self.textField?.attributedStringValue = rep
                 } else if let rep = self.representedObject as? NSImage {
-                    self.imageView.isHidden = false
-                    self.textLabel.isHidden = true
+                    self.imageView?.isHidden = false
+                    self.textField?.isHidden = true
                     
-                    self.imageView.image = rep
-                    self.textLabel.stringValue = ""
+                    self.imageView?.image = rep
+                    self.textField?.stringValue = ""
                 } else {
-                    self.imageView.isHidden = true
-                    self.textLabel.isHidden = false
+                    self.imageView?.isHidden = true
+                    self.textField?.isHidden = false
                     
-                    self.imageView.image = nil
-                    self.textLabel.stringValue = self.placeholderString
+                    self.imageView?.image = nil
+                    self.textField?.stringValue = self.placeholderString
                 }
                 self.view.needsLayout = true
             }
@@ -71,7 +70,7 @@ public class CardViewController: NSViewController {
     
     /// Adjust the none string's color to be quieter and font size to fit the view.
     public override func viewDidLayout() {
-        self.textLabel.textColor = self.representedObject == nil ? .tertiaryLabelColor : .labelColor
-        self.textLabel.font = NSFont.systemFont(ofSize: self.textLabel.stringValue.fittingSize(within: self.view.bounds.insetBy(dx: 16, dy: 16).size))
+        self.textField?.textColor = self.representedObject == nil ? .tertiaryLabelColor : .labelColor
+        self.textField?.font = NSFont.systemFont(ofSize: self.textField!.stringValue.fittingSize(within: self.view.bounds.insetBy(dx: 16, dy: 16).size))
     }
 }

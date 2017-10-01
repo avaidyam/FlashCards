@@ -64,9 +64,9 @@
 			isa = PBXGroup;
 			children = (
 				48466CC91F6FF23C008AD85A /* Deck.swift */,
+				48466CCB1F6FF46E008AD85A /* Card.swift */,
 				48A9CE681F7E092600D2008A /* DeckWindowController.swift */,
 				48A9CE6A1F7E094700D2008A /* DeckListViewController.swift */,
-				48466CCB1F6FF46E008AD85A /* Card.swift */,
 				48A9CE661F7E07FC00D2008A /* CardViewController.swift */,
 				4828FBAA1F5F076500918A79 /* Interface.swift */,
 				48466CC71F6FF21C008AD85A /* Extensions.swift */,

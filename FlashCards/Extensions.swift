@@ -154,24 +154,94 @@ public class FirstResponderView: NSView {
     }
 }
 
-// Clickable NSImageView
-public class ClickableImageView: NSImageView {
+public class DragDropImageView: NSImageView, NSDraggingSource {
     
-    public override func mouseDown(with event: NSEvent) {
-        if event.type != .leftMouseDown {
-            super.mouseDown(with: event)
+    /// Double click or Enter action.
+    public var doubleAction: Selector?
+    
+    private var mouseDownEvent: NSEvent?
+    private var inDrag: Bool = false
+
+    public func draggingSession(_: NSDraggingSession, sourceOperationMaskFor _: NSDraggingContext) -> NSDragOperation {
+        return [.copy, .delete]
+    }
+    
+    public func draggingSession(_: NSDraggingSession, endedAt _: NSPoint, operation: NSDragOperation) {
+        if operation == .delete {
+            self.image = nil
+        }
+        self.inDrag = false
+    }
+    
+    public override func mouseDown(with theEvent: NSEvent) {
+        self.mouseDownEvent = theEvent
+    }
+    
+    public override func mouseDragged(with theEvent: NSEvent) {
+        guard let image = self.image, self.isEditable else { return }
+        guard let mouseDown = self.mouseDownEvent?.locationInWindow else { return }
+        
+        let dragPoint = theEvent.locationInWindow
+        let dragDistance = hypot(mouseDown.x - dragPoint.x, mouseDown.y - dragPoint.y)
+        guard dragDistance >= 3 else { return }
+        
+        let size = NSSize(width: log10(image.size.width) * 30, height: log10(image.size.height) * 30)
+        if let img = self.resize(size) {
+            let draggingItem = NSDraggingItem(pasteboardWriter: image)
+            let draggingFrameOrigin = self.convert(mouseDown, from: nil)
+            let draggingFrame = NSRect(origin: draggingFrameOrigin, size: img.size).offsetBy(dx: -img.size.width / 2,
+                                                                                             dy: -img.size.height / 2)
+            draggingItem.draggingFrame = draggingFrame
+            draggingItem.imageComponentsProvider = {
+                let component = NSDraggingImageComponent(key : .icon)
+                component.contents = image
+                component.frame = NSRect(origin: NSPoint(), size: draggingFrame.size)
+                return [component]
+            }
+            self.inDrag = true
+            self.beginDraggingSession(with: [draggingItem], event: mouseDownEvent!, source: self)
         }
     }
     
     public override func mouseUp(with event: NSEvent) {
-        if event.type != .leftMouseUp {
-            super.mouseUp(with: event)
-        } else {
-            let point = self.convert(event.locationInWindow, from: nil)
-            if self.mouse(point, in: self.bounds) && self.action != nil {
-                NSApp.sendAction(self.action!, to: self.target, from: self)
-            }
+        guard event.type == .leftMouseUp && event.clickCount == 2 && !self.inDrag else {
+            super.mouseUp(with: event); return
         }
+        
+        let point = self.convert(event.locationInWindow, from: nil)
+        if self.mouse(point, in: self.bounds) && self.doubleAction != nil {
+            NSApp.sendAction(self.doubleAction!, to: self.target, from: self)
+        }
+    }
+    
+    public override func insertNewline(_ sender: Any?) {
+        if self.doubleAction != nil {
+            NSApp.sendAction(self.doubleAction!, to: self.target, from: self)
+        }
+    }
+    
+    @IBAction public func openPanel(_ sender: Any!) {
+        let panel = NSOpenPanel()
+        panel.allowedFileTypes = ["jpg", "jpeg", "JPG", "JPEG", "png", "PNG", "tiff", "tif", "TIFF", "TIF"]
+        panel.canSelectHiddenExtension = true
+        
+        panel.beginSheetModal(for: self.window!) {
+            guard $0 == .OK else { return }
+            self.image = NSImage(contentsOf: panel.url!)
+        }
+    }
+    
+    private func resize(_ size: NSSize) -> NSImage? {
+        guard self.image != nil else { return nil }
+        
+        let newImage = NSImage(size: size)
+        newImage.lockFocus()
+        self.image!.draw(in: NSMakeRect(0, 0, size.width, size.height),
+                         from: NSMakeRect(0, 0, self.image!.size.width, self.image!.size.height),
+                         operation: .sourceOver, fraction: 1.0)
+        newImage.unlockFocus()
+        newImage.size = size
+        return NSImage(data: newImage.tiffRepresentation!)!
     }
 }
 

@@ -1,4 +1,5 @@
 import Cocoa
+import Quartz.ImageKit
 
 // TODO: Add alarm mode: cover as many cards as you can in X seconds.
 
@@ -53,6 +54,15 @@ public class ResponseViewController: NSViewController {
 public class EditTextController: NSViewController {
     @IBOutlet var frontTextField: NSTextField!
     @IBOutlet var backTextField: NSTextField!
+    @IBOutlet var frontImageView: DragDropImageView!
+    @IBOutlet var backImageView: DragDropImageView!
+    
+    public override func viewDidLoad() {
+        self.frontImageView.target = self.frontImageView
+        self.frontImageView.doubleAction = #selector(DragDropImageView.openPanel(_:))
+        self.backImageView.target = self.backImageView
+        self.backImageView.doubleAction = #selector(DragDropImageView.openPanel(_:))
+    }
 }
 
 public class EditImageController: NSViewController {
