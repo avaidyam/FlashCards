@@ -88,10 +88,10 @@ public class DeckListController: NSViewController, NSTableViewDelegate, NSTableV
         }
         
         if let vc = viewController as? EditTextController {
-            guard vc.frontTextField.stringValue != "" && vc.backTextField.stringValue != "" else {
+            guard vc.frontTextView.string != "" && vc.backTextView.string != "" else {
                 self.presentError(CocoaError(.userCancelled)); return
             }
-            deck.cards.append(Card(front: vc.frontTextField.stringValue, back: vc.backTextField.stringValue))
+            deck.cards.append(Card(front: vc.frontTextView.string, back: vc.backTextView.string))
             
         } else if let vc = viewController as? EditImageController {
             guard vc.frontImageView.image != nil && vc.backImageView.image != nil else {

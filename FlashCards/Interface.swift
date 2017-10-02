@@ -52,8 +52,8 @@ public class ResponseViewController: NSViewController {
 }
 
 public class EditTextController: NSViewController {
-    @IBOutlet var frontTextField: NSTextField!
-    @IBOutlet var backTextField: NSTextField!
+    @IBOutlet var frontTextView: NSTextView!
+    @IBOutlet var backTextView: NSTextView!
     @IBOutlet var frontImageView: DragDropImageView!
     @IBOutlet var backImageView: DragDropImageView!
     
